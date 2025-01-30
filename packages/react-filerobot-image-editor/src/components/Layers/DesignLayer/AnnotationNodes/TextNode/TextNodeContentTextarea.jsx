@@ -289,6 +289,15 @@ const TextNodeContentTextarea = ({
         EVENTS.SAVE_EDITED_TEXT_CONTENT,
         saveTextAndCancelWithoutSelecting,
       );
+
+      if (textareaRef.current) {
+        const range = document.createRange();
+        const selection = window.getSelection();
+        range.selectNodeContents(textareaRef.current);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
     }
 
     return () => {
