@@ -57,3 +57,5 @@ export { default as useAnnotationOrdering } from './useAnnotationOrdering';
 export { default as useEditableTextId } from './useEditableTextId';
 
 export { default as useZoom } from './useZoom';
+
+export { default as useTextAnnotationPartEditing } from './useTextAnnotationPartEditing';

@@ -83,6 +83,7 @@ const getInitialAppState = (config = {}) => {
       element: null,
       startIndex: null,
       endIndex: null,
+      annotationId: null,
     },
     extra: undefined, // used for saving extra data in the state in-case needed outside of the application and considered in the history (undo/redo/reset) reducer.
   };

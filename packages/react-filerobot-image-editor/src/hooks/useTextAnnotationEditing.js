@@ -299,7 +299,9 @@ const useTextAnnotationEditing = (enableEvents = false) => {
         document.removeEventListener('selectionchange', updateActiveFormats);
       }
 
-      setCurrentSelectedText({});
+      if (!editableTextId) {
+        setCurrentSelectedText({});
+      }
     };
   }, [editableTextId, enableEvents, originalSourceInitialScale]);
 

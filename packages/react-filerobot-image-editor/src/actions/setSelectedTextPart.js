@@ -4,10 +4,14 @@ const setSelectedTextPart = (state, payload) => ({
   ...state,
   selectedTextPart: {
     hasSelection: payload.hasSelection ?? false,
-    textContent: payload.textContent || '',
+    textContent:
+      payload.textContent || payload.textContent === 0
+        ? payload.textContent
+        : '',
     element: payload.element || null,
     startIndex: payload.startIndex ?? null,
     endIndex: payload.endIndex ?? null,
+    annotationId: payload.annotationId ?? state.textIdOfEditableContent ?? null,
   },
 });
 
