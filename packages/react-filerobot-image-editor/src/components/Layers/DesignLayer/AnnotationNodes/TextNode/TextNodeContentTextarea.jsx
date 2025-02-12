@@ -200,8 +200,12 @@ const TextNodeContentTextarea = ({
       const childNodes = [];
 
       markElement.childNodes.forEach((node, index, nodes) => {
-        const prevNode = nodes[index - 1];
-        const isVariable = node.textContent.startsWith('$');
+        if (!node.textContent && node.textContent !== 0) {
+          return;
+        }
+
+        const prevNode = index > 0 ? nodes[index - 1] : undefined;
+        const isVariable = getNodeText(node).startsWith('$');
         if (
           prevNode?.nodeName === '#text' &&
           node.nodeName === '#text' &&
@@ -216,7 +220,7 @@ const TextNodeContentTextarea = ({
       if (
         markElement.previousSibling?.nodeName === '#text' &&
         childNodes[0].nodeName === '#text' &&
-        !childNodes[0].textContent.startsWith('$')
+        !getNodeText(childNodes[0]).startsWith('$')
       ) {
         childNodes[0].innerText = `${getNodeText(
           markElement.previousSibling,
@@ -228,7 +232,7 @@ const TextNodeContentTextarea = ({
       if (
         markElement.nextSibling?.nodeName === '#text' &&
         lastChildNode.nodeName === '#text' &&
-        !lastChildNode.textContent.startsWith('$')
+        !getNodeText(lastChildNode).startsWith('$')
       ) {
         lastChildNode.innerText = `${getNodeText(lastChildNode)}${getNodeText(
           markElement.nextSibling,

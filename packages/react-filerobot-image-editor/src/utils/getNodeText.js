@@ -1,3 +1,3 @@
-const getNodeText = (node) => node?.innerText ?? node?.textContent;
+const getNodeText = (node) => node?.innerText || node?.textContent;
 
 export default getNodeText;

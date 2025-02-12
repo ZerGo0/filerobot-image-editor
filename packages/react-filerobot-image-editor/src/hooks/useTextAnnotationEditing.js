@@ -63,14 +63,14 @@ const useTextAnnotationEditing = (enableEvents = false) => {
       getEditableSelectedUnfocusedTextData() || {};
     if (element) {
       if (element.firstElementChild) {
-        element.firstElementChild.textContent = textContentString;
+        element.firstElementChild.innerText = textContentString;
         element.replaceChildren(element.firstElementChild);
       } else if (element.firstChild?.nodeName === '#text') {
         const spanContainer = document.createElement('span');
-        spanContainer.textContent = textContentString;
+        spanContainer.innerText = textContentString;
         element.replaceChildren(spanContainer);
       } else {
-        element.textContent = textContentString;
+        element.innerText = textContentString;
       }
 
       element.dataset.endIndex =

@@ -140,10 +140,18 @@ export const pushNodeFlattenedContent = (
   wrapperStyles = {},
 ) => {
   const isLineBreakNode = node.nodeName === 'BR';
-  if ((node.nodeName === '#text' && getNodeText(node)) || isLineBreakNode) {
+
+  // Avoid totally empty nodes.
+  // we are using node.textContent here instead of innerText to make sure that the text has content as innerText keeps value even if text removed from DOM.
+  if (!node.textContent && node.textContent !== 0 && !isLineBreakNode) {
+    return;
+  }
+
+  // we are using .textContent cause '#text' doesn't have innerText
+  if ((node.nodeName === '#text' && node.textContent) || isLineBreakNode) {
     const lastNode = flattenedContent[flattenedContent.length - 1];
     const startIndex = lastNode?.endIndex || 0;
-    const nodeContent = isLineBreakNode ? '\n' : getNodeText(node);
+    const nodeContent = isLineBreakNode ? '\n' : node.textContent;
 
     if (
       lastNode &&
@@ -168,12 +176,12 @@ export const pushNodeFlattenedContent = (
       (node.parentNode.parentNode?.nodeName === 'MARK' &&
         node.parentNode.parentNode);
     if (markElement) {
-      if (getNodeText(markElement).startsWith(getNodeText(node))) {
+      if (getNodeText(markElement).startsWith(node.textContent)) {
         // eslint-disable-next-line no-param-reassign
         markElement.dataset.startIndex = startIndex;
       }
 
-      if (getNodeText(markElement).endsWith(getNodeText(node))) {
+      if (getNodeText(markElement).endsWith(node.textContent)) {
         // eslint-disable-next-line no-param-reassign
         markElement.dataset.endIndex =
           (parseInt(markElement.dataset.startIndex, 10) || 0) +
