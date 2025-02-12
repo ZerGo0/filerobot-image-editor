@@ -37,20 +37,29 @@ const useTextAnnotationPartEditing = () => {
       ? currentAnnotationText
       : [{ textContent: currentAnnotationText }];
 
-    annotationText = annotationText.map(
-      ({ textContent, startIndex, ...rest }) => {
-        const newTextContent = textContent.replace(searchValue, replaceValue);
+    let newestEndIndex;
+    annotationText = annotationText.map(({ textContent, ...rest }) => {
+      const { startIndex, endIndex } = rest;
+      const newTextContent = textContent.replace(searchValue, replaceValue);
 
-        return {
-          ...rest,
-          ...(typeof startIndex !== 'undefined' && {
-            startIndex,
-            endIndex: startIndex + newTextContent.length,
-          }),
-          textContent: newTextContent,
-        };
-      },
-    );
+      const newStartIndex =
+        typeof startIndex !== 'undefined'
+          ? newestEndIndex ?? startIndex
+          : undefined;
+      newestEndIndex =
+        typeof newStartIndex !== 'undefined'
+          ? newStartIndex + newTextContent.length
+          : endIndex;
+
+      return {
+        ...rest,
+        ...(typeof newStartIndex !== 'undefined' && {
+          startIndex: newStartIndex,
+          endIndex: newestEndIndex,
+        }),
+        textContent: newTextContent,
+      };
+    });
 
     setAnnotation({
       id: annotationId,
