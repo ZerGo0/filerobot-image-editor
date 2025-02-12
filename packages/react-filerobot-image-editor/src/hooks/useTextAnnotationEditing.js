@@ -74,9 +74,7 @@ const useTextAnnotationEditing = (enableEvents = false) => {
       }
 
       element.dataset.endIndex =
-        parseInt(startIndex, 10) +
-        textContentString.replaceAll('\n', '').length -
-        1;
+        parseInt(startIndex, 10) + textContentString.length;
     }
   };
 
@@ -244,7 +242,7 @@ const useTextAnnotationEditing = (enableEvents = false) => {
       textContent,
       element,
       startIndex,
-      endIndex, // inclusive
+      endIndex, // exclusive
       hasSelection: !selection.isCollapsed || Boolean(element),
     });
 

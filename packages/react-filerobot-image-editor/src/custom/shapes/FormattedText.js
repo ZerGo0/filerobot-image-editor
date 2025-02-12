@@ -56,6 +56,8 @@ const CHANGEABLE_ATTRS = [
   'scaleFormatDimensionsBy',
 ];
 
+const NEWLINE_COUNT_CONST = 1;
+
 export class FormattedText extends Shape {
   constructor(config) {
     super(config);
@@ -151,12 +153,12 @@ export class FormattedText extends Shape {
               width: 0,
               text: textContent
                 // Remove the new line as it is not needed in the content anymore
-                .replaceAll('\n', '')
-                .substring(start - startIndex, end - startIndex),
+                .substring(start - startIndex, end - startIndex)
+                .replaceAll('\n', ''),
             }))
         : [
             {
-              text: textStr.replaceAll('\n', '').slice(start, end),
+              text: textStr.slice(start, end).replaceAll('\n', ''),
               style: defaultFormat,
               width: 0,
             },
@@ -316,7 +318,7 @@ export class FormattedText extends Shape {
               break;
             }
             line = line.slice(low);
-            cursor += low;
+            cursor += low + NEWLINE_COUNT_CONST;
             if (line.length > 0) {
               // Check if the remaining text would fit on one line
               const foundParts = findParts(
@@ -349,7 +351,7 @@ export class FormattedText extends Shape {
         break;
       }
 
-      charCount += currentLine.length;
+      charCount += currentLine.length + NEWLINE_COUNT_CONST;
       currentHeight += lineHeight;
     }
 

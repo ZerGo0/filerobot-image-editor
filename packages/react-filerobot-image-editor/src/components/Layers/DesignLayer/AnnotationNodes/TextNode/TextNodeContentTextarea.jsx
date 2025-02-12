@@ -17,6 +17,7 @@ import {
   TEXT_EDITOR_ID,
   UNFOCUSED_MARKED_TEXT_SELECTOR_ID,
 } from 'utils/constants';
+import getNodeText from 'utils/getNodeText';
 import { StyledTextNodeContentTextarea } from './TextNode.styled';
 import {
   getNewFormattedContent,
@@ -85,8 +86,8 @@ const TextNodeContentTextarea = ({
   };
 
   const saveFormattedText = () => {
-    const { textContent } = textareaRef.current;
-    return commitTextUpdates(textContent, getFormattedText());
+    const { innerText } = textareaRef.current;
+    return commitTextUpdates(innerText, getFormattedText());
   };
 
   const saveFormattedTextAndCancel = (reselectAfterSaving = true) => {
@@ -146,8 +147,8 @@ const TextNodeContentTextarea = ({
       ? selectedUnfocusedTextElement || textareaRef.current
       : range.extractContents();
     const isWholeTextSelected =
-      targetContent?.textContent.length ===
-      textareaRef.current?.textContent.length;
+      getNodeText(targetContent)?.length ===
+      getNodeText(textareaRef.current)?.length;
 
     const newFormatKeys = Object.keys(updatedFormats);
     if (isNoSelectedText && !selectedUnfocusedTextElement) {
@@ -206,7 +207,7 @@ const TextNodeContentTextarea = ({
           node.nodeName === '#text' &&
           !isVariable
         ) {
-          prevNode.textContent = `${prevNode.textContent}${node.textContent}`;
+          prevNode.innerText = `${getNodeText(prevNode)}${getNodeText(node)}`;
         } else {
           childNodes.push(node);
         }
@@ -217,7 +218,9 @@ const TextNodeContentTextarea = ({
         childNodes[0].nodeName === '#text' &&
         !childNodes[0].textContent.startsWith('$')
       ) {
-        childNodes[0].textContent = `${markElement.previousSibling.textContent}${childNodes[0].textContent}`;
+        childNodes[0].innerText = `${getNodeText(
+          markElement.previousSibling,
+        )}${getNodeText(childNodes[0])}`;
         markElement.previousSibling.remove();
       }
 
@@ -227,7 +230,9 @@ const TextNodeContentTextarea = ({
         lastChildNode.nodeName === '#text' &&
         !lastChildNode.textContent.startsWith('$')
       ) {
-        lastChildNode.textContent = `${lastChildNode.textContent}${markElement.nextSibling.textContent}`;
+        lastChildNode.innerText = `${getNodeText(lastChildNode)}${getNodeText(
+          markElement.nextSibling,
+        )}`;
         markElement.nextSibling.remove();
       }
 

@@ -1,5 +1,6 @@
 /** Internal dependencies */
 import { TEXT_EDITOR_ID } from 'utils/constants';
+import getNodeText from 'utils/getNodeText';
 import rgbaToHexWithOpacity from 'utils/rgbaToHexa';
 
 export const getQuotedFontFamily = (fontFamily) =>
@@ -81,7 +82,12 @@ export const getNewFormattedContent = (selectedContent, formats) => {
   const newFormats = { ...formats };
 
   Array.from(selectedContent.childNodes).forEach((node, i) => {
-    const nodeTextContent = node.textContent;
+    if (node.nodeName === 'BR') {
+      newContent.push(node);
+      return;
+    }
+
+    const nodeTextContent = getNodeText(node);
     if (!nodeTextContent) {
       return;
     }
@@ -93,7 +99,7 @@ export const getNewFormattedContent = (selectedContent, formats) => {
         return;
       }
       const isSameTextAndHasStylableParent =
-        parentNode.textContent === node.textContent &&
+        getNodeText(parentNode) === getNodeText(node) &&
         parentNode?.style &&
         parentNode.nodeName !== 'MARK';
       newNode =
@@ -116,8 +122,8 @@ export const getNewFormattedContent = (selectedContent, formats) => {
       nodeTextContent &&
       newNode.style.cssText === newContent[i - 1]?.style.cssText
     ) {
-      newContent[i - 1].textContent = `${
-        newContent[i - 1].textContent
+      newContent[i - 1].innerText = `${
+        newContent[i - 1].innerText
       }${nodeTextContent}`;
       return;
     }
@@ -134,10 +140,10 @@ export const pushNodeFlattenedContent = (
   wrapperStyles = {},
 ) => {
   const isLineBreakNode = node.nodeName === 'BR';
-  if ((node.nodeName === '#text' && node.textContent) || isLineBreakNode) {
+  if ((node.nodeName === '#text' && getNodeText(node)) || isLineBreakNode) {
     const lastNode = flattenedContent[flattenedContent.length - 1];
-    const startIndex = (lastNode?.endIndex || -1) + 1;
-    const nodeContent = isLineBreakNode ? '\n' : node.textContent;
+    const startIndex = lastNode?.endIndex || 0;
+    const nodeContent = isLineBreakNode ? '\n' : getNodeText(node);
 
     if (
       lastNode &&
@@ -146,13 +152,9 @@ export const pushNodeFlattenedContent = (
       JSON.stringify(wrapperStyles) === JSON.stringify(lastNode.style)
     ) {
       lastNode.textContent = `${lastNode.textContent}${nodeContent}`;
-      lastNode.endIndex =
-        lastNode.startIndex +
-        lastNode.textContent.replaceAll('\n', '').length -
-        1;
+      lastNode.endIndex = lastNode.startIndex + lastNode.textContent.length;
     } else {
-      const endIndex =
-        startIndex + (nodeContent.replaceAll('\n').length || 1) - 1;
+      const endIndex = startIndex + (nodeContent.length || 1);
       flattenedContent.push({
         style: wrapperStyles,
         textContent: nodeContent,
@@ -166,17 +168,16 @@ export const pushNodeFlattenedContent = (
       (node.parentNode.parentNode?.nodeName === 'MARK' &&
         node.parentNode.parentNode);
     if (markElement) {
-      if (markElement.textContent.startsWith(node.textContent)) {
+      if (getNodeText(markElement).startsWith(getNodeText(node))) {
         // eslint-disable-next-line no-param-reassign
         markElement.dataset.startIndex = startIndex;
       }
 
-      if (markElement.textContent.endsWith(node.textContent)) {
+      if (getNodeText(markElement).endsWith(getNodeText(node))) {
         // eslint-disable-next-line no-param-reassign
         markElement.dataset.endIndex =
           (parseInt(markElement.dataset.startIndex, 10) || 0) +
-          markElement.textContent.replaceAll('\n', '').length -
-          1;
+          getNodeText(markElement).length;
       }
     }
 
@@ -185,7 +186,7 @@ export const pushNodeFlattenedContent = (
 
   const wrapperNodeStyle = cssStyleToJsCanvasProps(node.style.cssText);
   node.childNodes.forEach((currentNode) => {
-    if (!currentNode.textContent && currentNode.nodeName !== 'BR') {
+    if (!getNodeText(currentNode) && currentNode.nodeName !== 'BR') {
       return;
     }
 
