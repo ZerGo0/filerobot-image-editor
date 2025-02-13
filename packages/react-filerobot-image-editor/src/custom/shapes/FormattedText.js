@@ -137,6 +137,7 @@ export class FormattedText extends Shape {
       : 0;
 
     const findParts = (start, end) => {
+      console.log('hello', start, end, this.text());
       return Array.isArray(this.text()) && this.text().length > 0
         ? this.text()
             .filter(
@@ -195,6 +196,7 @@ export class FormattedText extends Shape {
         this.visibleLinesStartIndex += 1;
       }
 
+      console.log('lines', parts)
       this.textLines.push({
         width,
         parts: parts.map((part, i) => {
@@ -434,6 +436,7 @@ export class FormattedText extends Shape {
       const isLastLine = lineIndex === visibleLines.length - 1;
       let lineX = 0;
       context.save();
+      console.log('lining', line)
 
       // horizontal alignment
       if (this.align() === 'right') {
@@ -444,6 +447,7 @@ export class FormattedText extends Shape {
 
       line.parts.forEach((part) => {
         // style
+        console.log('the parting', part)
         if (part.style.textDecoration?.includes('underline')) {
           context.save();
           context.beginPath();
@@ -525,6 +529,7 @@ export class FormattedText extends Shape {
           lineX += part.width;
         }
       });
+      console.log(this.drawState, 'find')
 
       context.restore();
       if (typeof visibleLines[lineIndex + 1] !== 'undefined') {

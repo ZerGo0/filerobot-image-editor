@@ -51,6 +51,7 @@ const TextNode = ({
   const textX = x || 0;
   const textY = y || 0;
 
+  console.log('foramtted text', text, textX, textY)
   const textNode = (
     <FormattedText
       id={id}

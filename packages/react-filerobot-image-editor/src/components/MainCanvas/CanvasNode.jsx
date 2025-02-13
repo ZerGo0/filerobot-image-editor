@@ -56,6 +56,8 @@ const CanvasNode = ({ children }) => {
       zoom.factor > defaultZoomFactor,
   );
 
+
+  console.log('reached inside');
   const cursorStyle = useMemo(
     () => ({
       cursor:
