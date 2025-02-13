@@ -143,7 +143,12 @@ export const pushNodeFlattenedContent = (
 
   // Avoid totally empty nodes.
   // we are using node.textContent here instead of innerText to make sure that the text has content as innerText keeps value even if text removed from DOM.
-  if (!node.textContent && node.textContent !== 0 && !isLineBreakNode) {
+  if (
+    node.nodeName === '#text' &&
+    !node.textContent &&
+    node.textContent !== 0 &&
+    !isLineBreakNode
+  ) {
     return;
   }
 
