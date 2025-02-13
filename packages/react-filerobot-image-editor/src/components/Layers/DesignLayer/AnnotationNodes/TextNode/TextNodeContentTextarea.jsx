@@ -200,18 +200,23 @@ const TextNodeContentTextarea = ({
       const childNodes = [];
 
       markElement.childNodes.forEach((node, index, nodes) => {
+        if (node.nodeName === 'BR') {
+          childNodes.push(node);
+          return;
+        }
+
         if (!node.textContent && node.textContent !== 0) {
           return;
         }
 
         const prevNode = index > 0 ? nodes[index - 1] : undefined;
-        const isVariable = getNodeText(node).startsWith('$');
+        const isVariable = node.textContent.startsWith('$');
         if (
           prevNode?.nodeName === '#text' &&
           node.nodeName === '#text' &&
           !isVariable
         ) {
-          prevNode.innerText = `${getNodeText(prevNode)}${getNodeText(node)}`;
+          prevNode.textContent = `${prevNode.textContent}${node.textContent}`;
         } else {
           childNodes.push(node);
         }
@@ -220,11 +225,9 @@ const TextNodeContentTextarea = ({
       if (
         markElement.previousSibling?.nodeName === '#text' &&
         childNodes[0].nodeName === '#text' &&
-        !getNodeText(childNodes[0]).startsWith('$')
+        !childNodes[0].textContent.startsWith('$')
       ) {
-        childNodes[0].innerText = `${getNodeText(
-          markElement.previousSibling,
-        )}${getNodeText(childNodes[0])}`;
+        childNodes[0].textContent = `${markElement.previousSibling.textContent}${childNodes[0].textContent}`;
         markElement.previousSibling.remove();
       }
 
@@ -232,11 +235,9 @@ const TextNodeContentTextarea = ({
       if (
         markElement.nextSibling?.nodeName === '#text' &&
         lastChildNode.nodeName === '#text' &&
-        !getNodeText(lastChildNode).startsWith('$')
+        !lastChildNode.textContent.startsWith('$')
       ) {
-        lastChildNode.innerText = `${getNodeText(lastChildNode)}${getNodeText(
-          markElement.nextSibling,
-        )}`;
+        lastChildNode.textContent = `${lastChildNode.textContent}${markElement.nextSibling.textContent}`;
         markElement.nextSibling.remove();
       }
 
