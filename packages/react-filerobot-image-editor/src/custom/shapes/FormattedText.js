@@ -58,7 +58,8 @@ const CHANGEABLE_ATTRS = [
 
 const NEWLINE_COUNT_CONST = 1;
 
-export class FormattedText extends Shape {
+// We are suffixing with FIE (FilerobotImageEditor) for avoiding conflicts with any other Konva/custom's shapes (ex. FormattedText)
+export class FormattedTextFIE extends Shape {
   constructor(config) {
     super(config);
     // update text data for certain attr changes
@@ -137,7 +138,6 @@ export class FormattedText extends Shape {
       : 0;
 
     const findParts = (start, end) => {
-      console.log('hello', start, end, this.text());
       return Array.isArray(this.text()) && this.text().length > 0
         ? this.text()
             .filter(
@@ -196,7 +196,6 @@ export class FormattedText extends Shape {
         this.visibleLinesStartIndex += 1;
       }
 
-      console.log('lines', parts)
       this.textLines.push({
         width,
         parts: parts.map((part, i) => {
@@ -436,7 +435,6 @@ export class FormattedText extends Shape {
       const isLastLine = lineIndex === visibleLines.length - 1;
       let lineX = 0;
       context.save();
-      console.log('lining', line)
 
       // horizontal alignment
       if (this.align() === 'right') {
@@ -447,7 +445,6 @@ export class FormattedText extends Shape {
 
       line.parts.forEach((part) => {
         // style
-        console.log('the parting', part)
         if (part.style.textDecoration?.includes('underline')) {
           context.save();
           context.beginPath();
@@ -529,7 +526,6 @@ export class FormattedText extends Shape {
           lineX += part.width;
         }
       });
-      console.log(this.drawState, 'find')
 
       context.restore();
       if (typeof visibleLines[lineIndex + 1] !== 'undefined') {
@@ -579,8 +575,8 @@ export class FormattedText extends Shape {
   }
 }
 
-FormattedText.prototype.className = 'FormattedText';
-_registerNode(FormattedText);
+FormattedTextFIE.prototype.className = 'FormattedTextFIE';
+_registerNode(FormattedTextFIE);
 
 /**
  * get/set width of text area, which includes padding.
@@ -599,7 +595,7 @@ _registerNode(FormattedText);
  * text.width('auto');
  * text.width() // will return calculated width, and not "auto"
  */
-Factory.overWriteSetter(FormattedText, 'width', getNumberOrAutoValidator());
+Factory.overWriteSetter(FormattedTextFIE, 'width', getNumberOrAutoValidator());
 
 /**
  * get/set the height of the text area, which takes into account multi-line text, line heights, and padding.
@@ -618,7 +614,7 @@ Factory.overWriteSetter(FormattedText, 'width', getNumberOrAutoValidator());
  * text.height('auto');
  * text.height() // will return calculated height, and not "auto"
  */
-Factory.overWriteSetter(FormattedText, 'height', getNumberOrAutoValidator());
+Factory.overWriteSetter(FormattedTextFIE, 'height', getNumberOrAutoValidator());
 
 /**
  * get/set padding
@@ -633,7 +629,7 @@ Factory.overWriteSetter(FormattedText, 'height', getNumberOrAutoValidator());
  * // set padding to 10 pixels
  * text.padding(10);
  */
-Factory.addGetterSetter(FormattedText, 'padding', 0, getNumberValidator());
+Factory.addGetterSetter(FormattedTextFIE, 'padding', 0, getNumberValidator());
 
 /**
  * get/set horizontal align of text.  Can be 'left', 'center', 'right' or 'justify'
@@ -651,7 +647,7 @@ Factory.addGetterSetter(FormattedText, 'padding', 0, getNumberValidator());
  * // align text to right
  * text.align('right');
  */
-Factory.addGetterSetter(FormattedText, 'align', 'left');
+Factory.addGetterSetter(FormattedTextFIE, 'align', 'left');
 
 /**
  * get/set vertical align of text.  Can be 'top', 'middle', 'bottom'.
@@ -666,7 +662,7 @@ Factory.addGetterSetter(FormattedText, 'align', 'left');
  * // center text
  * text.verticalAlign('middle');
  */
-Factory.addGetterSetter(FormattedText, 'verticalAlign', 'top');
+Factory.addGetterSetter(FormattedTextFIE, 'verticalAlign', 'top');
 
 /**
  * get/set line height.  The default is 1.
@@ -681,7 +677,12 @@ Factory.addGetterSetter(FormattedText, 'verticalAlign', 'top');
  * // set the line height
  * text.lineHeight(2);
  */
-Factory.addGetterSetter(FormattedText, 'lineHeight', 1, getNumberValidator());
+Factory.addGetterSetter(
+  FormattedTextFIE,
+  'lineHeight',
+  1,
+  getNumberValidator(),
+);
 
 /**
  * get/set wrap.  Can be "word", "char", or "none". Default is "word".
@@ -698,7 +699,7 @@ Factory.addGetterSetter(FormattedText, 'lineHeight', 1, getNumberValidator());
  * // set wrap
  * text.wrap('word');
  */
-Factory.addGetterSetter(FormattedText, 'wrap', 'word');
+Factory.addGetterSetter(FormattedTextFIE, 'wrap', 'word');
 
 /**
  * get/set ellipsis. Can be true or false. Default is false. If ellipses is true,
@@ -716,7 +717,7 @@ Factory.addGetterSetter(FormattedText, 'wrap', 'word');
  * text.ellipsis(true);
  */
 Factory.addGetterSetter(
-  FormattedText,
+  FormattedTextFIE,
   'ellipsis',
   false,
   getBooleanValidator(),
@@ -729,7 +730,7 @@ Factory.addGetterSetter(
  * @param {Number} letterSpacing
  */
 Factory.addGetterSetter(
-  FormattedText,
+  FormattedTextFIE,
   'letterSpacing',
   0,
   getNumberValidator(),
@@ -750,7 +751,7 @@ Factory.addGetterSetter(
  * or
  * text.text([{ textContent: 'Hello there', style: { fontSize: 24, fill: 'green' }, startIndex: 0 }])
  */
-Factory.addGetterSetter(FormattedText, 'text');
+Factory.addGetterSetter(FormattedTextFIE, 'text');
 
 /**
  * get/set font family
@@ -765,7 +766,7 @@ Factory.addGetterSetter(FormattedText, 'text');
  * // set font family
  * text.fontFamily('Arial');
  */
-Factory.addGetterSetter(FormattedText, 'fontFamily', 'Arial');
+Factory.addGetterSetter(FormattedTextFIE, 'fontFamily', 'Arial');
 
 /**
  * get/set font size in pixels
@@ -780,7 +781,7 @@ Factory.addGetterSetter(FormattedText, 'fontFamily', 'Arial');
  * // set font size to 22px
  * text.fontSize(22);
  */
-Factory.addGetterSetter(FormattedText, 'fontSize', 16, getNumberValidator());
+Factory.addGetterSetter(FormattedTextFIE, 'fontSize', 16, getNumberValidator());
 
 /**
  * get/set font variant.  Can be 'normal' or 'small-caps'.  'normal' is the default.
@@ -796,7 +797,7 @@ Factory.addGetterSetter(FormattedText, 'fontSize', 16, getNumberValidator());
  * text.fontVariant('small-caps');
  */
 
-Factory.addGetterSetter(FormattedText, 'fontVariant', NORMAL);
+Factory.addGetterSetter(FormattedTextFIE, 'fontVariant', NORMAL);
 
 /**
  * get/set font style.  Can be 'normal', 'italic', or 'bold', '500' or even 'italic bold'.  'normal' is the default.
@@ -812,7 +813,7 @@ Factory.addGetterSetter(FormattedText, 'fontVariant', NORMAL);
  * text.fontStyle('italic');
  */
 
-Factory.addGetterSetter(FormattedText, 'fontStyle', NORMAL);
+Factory.addGetterSetter(FormattedTextFIE, 'fontStyle', NORMAL);
 
 /**
  * get/set font style.  Can be 'normal', 'italic', or 'bold', '500' or even 'italic bold'.  'normal' is the default.
@@ -828,7 +829,7 @@ Factory.addGetterSetter(FormattedText, 'fontStyle', NORMAL);
  * text.fontWeight('bold');
  */
 
-Factory.addGetterSetter(FormattedText, 'fontWeight', NORMAL);
+Factory.addGetterSetter(FormattedTextFIE, 'fontWeight', NORMAL);
 
 /**
  * get/set scaleFormatDimensionsBy, used to scale the format dimensions (ex. letterSpacing, baselineShift).
@@ -844,4 +845,4 @@ Factory.addGetterSetter(FormattedText, 'fontWeight', NORMAL);
  * text.fontWeight('bold');
  */
 
-Factory.addGetterSetter(FormattedText, 'scaleFormatDimensionsBy', 1);
+Factory.addGetterSetter(FormattedTextFIE, 'scaleFormatDimensionsBy', 1);

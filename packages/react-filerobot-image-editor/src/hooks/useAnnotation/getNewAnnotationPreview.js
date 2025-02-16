@@ -3,7 +3,7 @@ import Konva from 'konva';
 
 /** Internal Dependencies */
 import { TOOLS_IDS } from 'utils/constants';
-import { FormattedText } from 'custom/shapes/FormattedText';
+import { FormattedTextFIE } from 'custom/shapes/FormattedText';
 
 const annotationsNamesToKonvaClasses = {
   [TOOLS_IDS.RECT]: Konva.Rect,
@@ -11,7 +11,7 @@ const annotationsNamesToKonvaClasses = {
   [TOOLS_IDS.POLYGON]: Konva.RegularPolygon,
   [TOOLS_IDS.LINE]: Konva.Line,
   [TOOLS_IDS.IMAGE]: Konva.Image,
-  [TOOLS_IDS.TEXT]: FormattedText,
+  [TOOLS_IDS.TEXT]: FormattedTextFIE,
   [TOOLS_IDS.ARROW]: Konva.Arrow,
 };
 

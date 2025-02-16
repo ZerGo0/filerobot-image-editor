@@ -8,7 +8,7 @@ import { useEditableTextId } from 'hooks';
 import nodesCommonPropTypes from '../../nodesCommonPropTypes';
 import TextNodeContentTextarea from './TextNodeContentTextarea';
 
-const FormattedText = 'FormattedText';
+const FormattedText = 'FormattedTextFIE';
 
 const TextNode = ({
   id,
@@ -51,7 +51,6 @@ const TextNode = ({
   const textX = x || 0;
   const textY = y || 0;
 
-  console.log('foramtted text', text, textX, textY)
   const textNode = (
     <FormattedText
       id={id}
