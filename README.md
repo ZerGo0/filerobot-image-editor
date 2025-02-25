@@ -342,6 +342,56 @@ filerobotImageEditor.render({
 
 <hr />
 
+
+## Customization & extend
+
+> Note: customization works for react version only.
+
+> In the following way, you could customize (use only what you need) or extend the annotations with more custom shapes.
+
+- Wrap your code with the context of the library.
+```js
+import { FilerobotImageEditorProvider, Spinner } from 'react-filerobot-image-editor'
+
+// ...
+// ..
+// .
+return (
+   <FilerobotImageEditorProvider {...config}>
+     {/* the components of the children prop here will be able to access all the state and data available from library through the context (ex. useAnnotations, DesignLayer, useStore...etc.). */}
+    {children}
+   </FilerobotImageEditorProvider>
+)
+```
+
+example for rendering the canvas with Text node, Rect node & custom node (ex. Sticker) annotations.
+```js
+import { FilerobotImageEditorProvider, CanvasWrapper, DesignLayerTextNode, DesignLayerRectNode } from 'react-filerobot-image-editor'
+
+// ...
+// ..
+// .
+return (
+   <FilerobotImageEditorProvider {...config}>
+     <CanvasWrapper {...props}>
+       <DesignLayerWrapper {...otherProps}>
+         <DesignLayerTextNode {...nodeProps} />
+         <DesignLayerRectNode {...nodeProps} />
+         <CustomNode {...nodeProps} /> {/* This is a custom node should be implemented from ur side */}
+       </DesignLayerWrapper>
+     </CanvasWrapper>
+   </FilerobotImageEditorProvider>
+)
+```
+
+After that your code inside the provider is going to use the whole provided code/data from the library, and to show the design layer, tools or any other library related components you have to import these components inside the provider usage.
+
+- You could view all the available context/components/utils/hooks...etc exported from the react version from this [index.js file](./packages/react-filerobot-image-editor/src/index.js)
+
+> `useStore` exported from the `index.js` file contains all the state of the library but not advised to use the state directly and make your first option to use the other hooks available to avoid issues happen on your side in-case of state renaming/changes happened in future releases.
+
+> You could provide all the following config to the provider above normally, or if you are going to use some specific component you could provide the concerned configurations to it.
+
 ## Config
 
 > NOTE: The plugin respects the container/wrapper HTML element through CSS by having both `width` & `height` set `100%` so you could change the width/height of the plugin through adding/changing width/height of the wrapper HTML element.
