@@ -12,6 +12,7 @@ class FilerobotImageEditor {
   #root;
   #getCurrentImgDataFnRef;
   #updateStateFnRef;
+  #rootInitialized;
 
   constructor(container, config = {}) {
     this.container = container;
@@ -23,7 +24,9 @@ class FilerobotImageEditor {
       );
     }
 
+    this.#rootInitialized = false;
     this.#root = createRoot(this.container);
+    this.#rootInitialized = true;
     this.#getCurrentImgDataFnRef = {};
     this.#updateStateFnRef = {};
 
@@ -47,8 +50,9 @@ class FilerobotImageEditor {
       updateStateFnRef: this.#updateStateFnRef,
     };
 
-    if (!this.#root._internalRoot) {
+    if (!this.#rootInitialized) {
       this.#root = createRoot(this.container);
+      this.#rootInitialized = true;
     }
 
     this.#root.render(createElement(AssemblyPoint, this.config));
@@ -56,6 +60,7 @@ class FilerobotImageEditor {
 
   terminate() {
     this.#root.unmount();
+    this.#rootInitialized = false;
   }
 
   getCurrentImgData(imageFileInfo, pixelRatio, keepLoadingSpinnerShown) {

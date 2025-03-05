@@ -31,14 +31,14 @@
     "@babel/runtime": "^7.17.2",
     "@scaleflex/icons": "2.10.27",
     "@scaleflex/ui": "2.10.27",
-    "konva": "9.3.6",
+    "konva": "9.3.18",
     "prop-types": "15.7.2",
-    "react-konva-utils": "1.0.7"
+    "react-konva-utils": "1.1.0"
   },
   "peerDependencies": {
-    "react": ">=17.0.0",
-    "react-dom": ">=17.0.0",
-    "react-konva": ">=17.0.0",
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0",
+    "react-konva": ">=19.0.0",
     "styled-components": ">=5.3.5"
   },
   "scripts": {
