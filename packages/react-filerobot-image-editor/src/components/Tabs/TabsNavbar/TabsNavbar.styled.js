@@ -10,6 +10,7 @@ const StyledTabsNavbar = styled.div`
   overflow-y: auto;
   max-height: 100%;
   box-shadow: 6px 8px 12px 0px rgba(146, 166, 188, 0.14);
+  overflow-x: hidden;
 
   [data-phone='true'] & {
     display: flex;

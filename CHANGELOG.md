@@ -46,6 +46,7 @@ Added
 - Support creating a design (noHistoryRecord -- if true, won't be considered in the history state for this change --, background color, width & height) instead of editing image only.
 - Characters/text part formatting & adding baseline shift.
 - Zoom fit button.
+- AI tab and ObjectRemoval tool -- their docs are missing, to be added --.
 
 Fixed
 - Undo/Redo or deleted shapes.

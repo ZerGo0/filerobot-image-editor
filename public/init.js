@@ -15,6 +15,8 @@ const watermark = getElementById('watermark');
 const annotate = getElementById('annotate');
 const annotateLabel = getElementById('annotate-label');
 const resize = getElementById('resize');
+const ai = getElementById('ai');
+const aiLabel = getElementById('ai-label');
 const addImg = getElementById('add-image');
 const modeOptions = getElementById('mode-options');
 const jsTabTitle = getElementById('js-code-tab');
@@ -48,6 +50,7 @@ const selectedTabs = [
   TABS.WATERMARK,
   TABS.ANNOTATE,
   TABS.RESIZE,
+  TABS.AI,
 ];
 
 const IMG_EDITOR_TABS = {
@@ -57,6 +60,7 @@ const IMG_EDITOR_TABS = {
   watermark: TABS.WATERMARK,
   annotate: TABS.ANNOTATE,
   resize: TABS.RESIZE,
+  ai: TABS.AI,
 };
 
 const pluginConfig = {
@@ -190,6 +194,11 @@ function changeModeHandler() {
     filterLabel.style.color = 'gray';
     filterLabel.style.cursor = 'auto';
 
+    ai.checked = false;
+    ai.disabled = true;
+    aiLabel.style.color = 'gray';
+    aiLabel.style.cursor = 'auto';
+
     useCloudimage = true;
   } else {
     if (selectedTabs.includes(annotate.name)) {
@@ -200,12 +209,20 @@ function changeModeHandler() {
       filter.checked = true;
     }
 
+    if (selectedTabs.includes(ai.name)) {
+      ai.checked = true;
+    }
+
     filter.disabled = false;
     filterLabel.style.color = '#203254';
     filterLabel.style.cursor = 'pointer';
     annotate.disabled = false;
     annotateLabel.style.color = '#203254';
     annotateLabel.style.cursor = 'pointer';
+
+    ai.disabled = false;
+    aiLabel.style.color = '#203254';
+    aiLabel.style.cursor = 'pointer';
 
     useCloudimage = false;
   }
@@ -278,6 +295,7 @@ filter.addEventListener('change', onChangeTabsHandler);
 watermark.addEventListener('change', onChangeTabsHandler);
 annotate.addEventListener('change', onChangeTabsHandler);
 resize.addEventListener('change', onChangeTabsHandler);
+ai.addEventListener('change', onChangeTabsHandler);
 addImg.addEventListener('change', uploadImg);
 modeOptions.addEventListener('change', changeModeHandler);
 jsTabTitle.addEventListener('click', toggleActiveCodeTab);

@@ -7,7 +7,7 @@ import { AVAILABLE_TABS } from '../Tabs.constants';
 
 const useTabs = (customTabsIds) => {
   const {
-    config: { tabsIds: configTabsIds, useCloudimage },
+    config: { tabsIds: configTabsIds, useCloudimage, useAiTab },
   } = useStore();
 
   const tabsIds = customTabsIds || configTabsIds;
@@ -26,7 +26,7 @@ const useTabs = (customTabsIds) => {
     }
 
     return (tabs.length > 0 ? tabs : AVAILABLE_TABS).filter(
-      ({ hideFn }) => !hideFn || !hideFn({ useCloudimage }),
+      ({ hideFn }) => !hideFn || !hideFn({ useCloudimage, useAiTab }),
     );
   }, [tabsIds]);
 

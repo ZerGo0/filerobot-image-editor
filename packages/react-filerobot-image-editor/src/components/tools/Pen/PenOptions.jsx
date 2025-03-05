@@ -124,7 +124,7 @@ const PenOptions = ({ t }) => {
   return (
     <AnnotationOptions
       className="FIE_pen-tool-options"
-      dataTestId="FIE_pen-tool-options"
+      data-testid="FIE_pen-tool-options"
       annotation={pen}
       updateAnnotation={savePenDebounced}
       t={t}

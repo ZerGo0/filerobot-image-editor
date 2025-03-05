@@ -1,6 +1,6 @@
 import { TABS_TOOLS } from 'components/tools/tools.constants';
 import { POINTER_ICONS, TABS_IDS } from 'utils/constants';
-import isAnnotationTool from 'utils/isAnnotationTool';
+import isDrawTool from 'utils/isDrawTool';
 
 export const SELECT_TAB = 'SELECT_TAB';
 
@@ -15,7 +15,7 @@ const selectTab = (state, payload) => {
     toolId,
     selectionsIds: [],
     pointerCssIcon:
-      tabId === TABS_IDS.ANNOTATE || isAnnotationTool(toolId)
+      tabId === TABS_IDS.ANNOTATE || isDrawTool(toolId)
         ? POINTER_ICONS.DRAW
         : POINTER_ICONS.DEFAULT,
   };

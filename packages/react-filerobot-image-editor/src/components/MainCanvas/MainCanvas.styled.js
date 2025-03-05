@@ -24,6 +24,7 @@ const StyledOriginalImage = styled.img`
 const StyledCanvasNode = styled(Stage)`
   outline: none;
   background: ${({ theme }) => theme.palette['bg-primary']};
+  position: relative;
 `;
 
 export { CanvasContainer, StyledOriginalImage, StyledCanvasNode };

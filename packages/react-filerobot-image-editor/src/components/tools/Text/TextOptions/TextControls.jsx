@@ -61,7 +61,7 @@ const TextControls = ({ text: tmpTextAnnotation, saveText, children }) => {
   return (
     <AnnotationOptions
       className="FIE_text-tool-options"
-      dataTestId="FIE_text-tool-options"
+      data-testid="FIE_text-tool-options"
       annotation={text}
       updateAnnotation={updateTargetTextFormats}
       morePoppableOptionsPrepended={!useCloudimage ? TEXT_POPPABLE_OPTIONS : []}

@@ -8,6 +8,7 @@ declare const TABS = {
   WATERMARK: 'Watermark',
   ANNOTATE: 'Annotate',
   RESIZE: 'Resize',
+  AI: 'AI',
 } as const;
 
 declare const TOOLS = {
@@ -35,13 +36,14 @@ declare const TOOLS = {
   WATERMARK: 'Watermark',
   PEN: 'Pen',
   RESIZE: 'Resize',
+  OBJECT_REMOVAL: 'ObjectRemoval',
 } as const;
 
 // TABS_IDS
-type availableTabs = typeof TABS[keyof typeof TABS];
+type availableTabs = (typeof TABS)[keyof typeof TABS];
 
 // TOOLS_IDS
-type availableTools = typeof TOOLS[keyof typeof TOOLS];
+type availableTools = (typeof TOOLS)[keyof typeof TOOLS];
 
 type lineCap = 'butt' | 'round' | 'square';
 
@@ -122,6 +124,30 @@ type arrowAnnotation = annotationsCommon & {
 type rotateAnnotation = {
   angle?: number;
   componentType?: 'slider' | 'buttons';
+};
+
+type objectRemoval = {
+  opacity?: number;
+  stroke?: string;
+  strokeWidth?: number;
+  tension?: number;
+  lineCap?: lineCap;
+  bezier?: boolean;
+  onDrawEnd?: ({
+    attrs,
+    updateOriginalSourceFns,
+  }: {
+    attrs: object;
+    updateOriginalSourceFns: {
+      loadAndSetOriginalSource: (
+        source: string | object | HTMLImageElement,
+      ) => Promise<void>;
+      setOriginalSource: (source: object | HTMLImageElement) => void;
+      setOriginalSourceIfDimensionsFound: (
+        source: object | HTMLImageElement,
+      ) => void;
+    };
+  }) => void;
 };
 
 type cropPresetItem = {
@@ -268,12 +294,16 @@ export interface FilerobotImageEditorConfig {
   Arrow?: arrowAnnotation;
   // [TOOLS_IDS.ROTATE]:
   Rotate?: rotateAnnotation;
+  // [TOOLS_IDS.OBJECT_REMOVAL]:
+  ObjectRemoval?: objectRemoval;
   // [TOOLS_IDS.WATERMARK]
   Watermark?: {
-    gallery?: string[] | ({ url: string, previewUrl: string })[] | [];
-    onUploadWatermarkImgClick?: (loadAndSetWatermarkImg: (imgUrl, revokeObjectUrl) => void) => Promise<{ url: string, revokeObjectUrl?: boolean }> | void
-    textScalingRatio?: number,
-    imageScalingRatio?: number,
+    gallery?: string[] | { url: string; previewUrl: string }[] | [];
+    onUploadWatermarkImgClick?: (
+      loadAndSetWatermarkImg: (imgUrl, revokeObjectUrl) => void,
+    ) => Promise<{ url: string; revokeObjectUrl?: boolean }> | void;
+    textScalingRatio?: number;
+    imageScalingRatio?: number;
     hideTextWatermark?: boolean;
   };
   // [TOOLS_IDS.CROP]
@@ -288,7 +318,16 @@ export interface FilerobotImageEditorConfig {
     presetsItems?: cropPresetItem[];
     presetsFolders?: cropPresetFolder[];
     autoResize?: boolean;
-    lockCropAreaAt?: 'top-left' |  'top-center' | 'top-right' | 'center-left' | 'center-center' | 'center-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+    lockCropAreaAt?:
+      | 'top-left'
+      | 'top-center'
+      | 'top-right'
+      | 'center-left'
+      | 'center-center'
+      | 'center-right'
+      | 'bottom-left'
+      | 'bottom-center'
+      | 'bottom-right';
   };
   // TABS_IDS
   tabsIds?: availableTabs[] | [];
@@ -321,6 +360,7 @@ export interface FilerobotImageEditorConfig {
   savingPixelRatio: number;
   previewPixelRatio: number;
   moreSaveOptions?: saveOption[];
+  useAiTab?: boolean;
   useCloudimage?: boolean;
   cloudimage?: {
     token: string;

@@ -1050,6 +1050,16 @@ Example,
 
 > Please note the letters-case of the above properties..
 
+#### `useAiTab`
+
+<u>Type:</u> `boolean`
+
+<u>Supported version:</u> +v5.0.0
+
+<u>Default:</u> `false`
+
+If `true` the AI tab with its tools will be shown (note, these tools are just UI but the functionality/operation itself must be done on ur side whether BE/FE).
+
 #### `useCloudimage`
 
 <u>Type:</u> `boolean`

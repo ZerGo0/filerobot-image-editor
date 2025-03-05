@@ -24,9 +24,10 @@ import {
   TOOLS_IDS,
 } from 'utils/constants';
 import { useEditableTextId, useStore } from 'hooks';
-import isAnnotationTool from 'utils/isAnnotationTool';
+import isDrawTool from 'utils/isDrawTool';
 import { endTouchesZooming, zoomOnTouchesMove } from './touchZoomingEvents';
 import { StyledCanvasNode } from './MainCanvas.styled';
+import { getCursorStyle } from './MainCanvas.utils';
 
 const ZOOM_DELTA_TO_SCALE_CONVERT_FACTOR = 0.006;
 
@@ -52,17 +53,13 @@ const CanvasNode = ({ children }) => {
   const [isPanningEnabled, setIsPanningEnabled] = useState(
     () =>
       ((tabId !== TABS_IDS.ANNOTATE && tabId !== TABS_IDS.WATERMARK) ||
-        !isAnnotationTool(toolId)) &&
+        !isDrawTool(toolId)) &&
       zoom.factor > defaultZoomFactor,
   );
 
   const cursorStyle = useMemo(
     () => ({
-      cursor:
-        pointerCssIcon === POINTER_ICONS.DEFAULT &&
-        (tabId === TABS_IDS.ANNOTATE || isAnnotationTool(toolId))
-          ? POINTER_ICONS.DRAW
-          : pointerCssIcon,
+      cursor: getCursorStyle({ tabId, toolId, pointerCssIcon }),
     }),
     [tabId, toolId, pointerCssIcon],
   );
@@ -136,7 +133,7 @@ const CanvasNode = ({ children }) => {
 
   const resetPanningAbility = () =>
     setIsPanningEnabled(
-      (tabId !== TABS_IDS.ANNOTATE && !isAnnotationTool(toolId)) ||
+      (tabId !== TABS_IDS.ANNOTATE && !isDrawTool(toolId)) ||
         tabId === TABS_IDS.WATERMARK,
     );
 
@@ -180,7 +177,7 @@ const CanvasNode = ({ children }) => {
     setIsPanningEnabled(
       tabId !== TABS_IDS.ANNOTATE &&
         tabId !== TABS_IDS.WATERMARK &&
-        !isAnnotationTool(toolId) &&
+        !isDrawTool(toolId) &&
         zoom.factor > defaultZoomFactor,
     );
 

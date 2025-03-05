@@ -314,6 +314,21 @@ const config = {
     //   }
     // },
   },
+  // [TOOLS.OBJECT_REMOVAL]: {
+    // stroke: '#000000',
+    // strokeWidth: 100,
+    // onDrawEnd: async ({ attrs, updateOriginalSourceFns }) => {
+    //   return new Promise((resolve) => {
+    //     console.log('🔔 onDrawEnd', attrs, );
+    //     setTimeout(() => {
+    //       updateOriginalSourceFns.loadAndSetOriginalSource('https://scaleflex.cloudimg.io/v7/demo/spencer-davis-unsplash.jpg').then(() => {
+    //         console.log('should be done!!!')
+    //       })
+    //       resolve()
+    //     }, 10000)
+    //   })
+    // }
+  // },
   // onBeforeSave: (imageFileInfo) => {
   //   console.log('info', imageFileInfo);
   //   return false;
@@ -360,6 +375,7 @@ const config = {
   // defaultTabId: TABS.ADJUST,
   // defaultToolId: TOOLS.CROP,
   // showBackButton: true,
+  useAiTab: true,
   // useCloudimage: true,
   // cloudimage: {
   //   token: 'test',

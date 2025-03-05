@@ -4,7 +4,7 @@ import { useMemo, useCallback } from 'react';
 /** Internal Dependencies */
 import { SELECT_ANNOTATION } from 'actions';
 import { TOOLS_IDS, TABS_IDS, WATERMARK_ANNOTATION_ID } from 'utils/constants';
-import isAnnotationTool from 'utils/isAnnotationTool';
+import isDrawTool from 'utils/isDrawTool';
 import useStore from './useStore';
 import useSetAnnotation from './useSetAnnotation';
 
@@ -22,7 +22,7 @@ const useAnnotationEvents = () => {
       !keepAnnotationEventsEnabled &&
       tabId !== TABS_IDS.ANNOTATE &&
       tabId !== TABS_IDS.WATERMARK &&
-      !isAnnotationTool(toolId),
+      !isDrawTool(toolId),
     [tabId, toolId],
   );
 

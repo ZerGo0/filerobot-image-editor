@@ -59,3 +59,7 @@ export { default as useEditableTextId } from './useEditableTextId';
 export { default as useZoom } from './useZoom';
 
 export { default as useTextAnnotationPartEditing } from './useTextAnnotationPartEditing';
+
+export { default as useDrawPreviewByPointer } from './useDrawPreviewByPointer';
+
+export { default as useSetOriginalSource } from './useSetOriginalSource';

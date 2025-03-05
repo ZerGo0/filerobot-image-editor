@@ -60,6 +60,21 @@ export default {
     lineCap: 'butt', // butt/round/square
     strokeWidth: 1,
   },
+  [TOOLS_IDS.OBJECT_REMOVAL]: {
+    opacity: 0.65,
+    stroke: '#ffffff',
+    strokeWidth: 50,
+    shadowColor: '#000000',
+    shadowOffsetX: 0,
+    shadowOffsetY: 0,
+    shadowBlur: 10,
+    shadowOpacity: 0.4,
+    tension: 1,
+    lineCap: 'round',
+    lineJoin: 'round',
+    bezier: true,
+    onDrawEnd: undefined,
+  },
   [TOOLS_IDS.ARROW]: {
     strokeWidth: 6,
     lineCap: 'butt',
@@ -112,6 +127,7 @@ export default {
   savingPixelRatio: 4,
   previewPixelRatio: window ? window.devicePixelRatio || 1 : 1,
   showBackButton: false,
+  useAiTab: false,
   useCloudimage: false,
   cloudimage: {
     token: '',

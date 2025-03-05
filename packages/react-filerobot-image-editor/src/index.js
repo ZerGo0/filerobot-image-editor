@@ -93,3 +93,5 @@ export * from 'components/buttons';
 export * from 'utils/constants';
 
 export * from 'hooks';
+
+export * from 'components/tools/ObjectRemoval';

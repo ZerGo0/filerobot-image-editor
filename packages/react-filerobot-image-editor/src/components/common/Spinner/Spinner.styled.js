@@ -1,14 +1,13 @@
 /** External Dependencies */
 import { Loading } from '@scaleflex/icons';
 import styled, { keyframes } from 'styled-components';
-import { Color as PC } from '@scaleflex/ui/utils/types/palette';
 
 const spin = keyframes`
   to { transform: rotate(360deg); }
 `;
 
 const StyledSpinnerWrapper = styled.div`
-  background: ${({ theme: { palette } }) => palette[PC.BackgroundStateless]};
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
