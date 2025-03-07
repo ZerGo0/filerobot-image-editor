@@ -97,8 +97,14 @@ const ObjectRemovalOptions = ({
             updateOriginalSourceFns,
             appStore: store,
             originalSource,
-            getMaskedImage: () =>
-              constructMaskImage(originalSource, attrs.points, attrs),
+            // cbkFunctionName => toBlob, toImage, toDataURL, toCanvas
+            getMaskedImage: (cbkFunctionName = 'toBlob') =>
+              constructMaskImage(
+                originalSource,
+                attrs.points,
+                cbkFunctionName,
+                attrs,
+              ),
           }),
         ).finally(() => {
           setIsDisabled(false);

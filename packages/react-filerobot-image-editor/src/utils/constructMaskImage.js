@@ -1,5 +1,6 @@
 /** External Dependencies */
 import Konva from 'konva';
+import isFunction from './isFunction';
 
 /**
  * Constructs a mask image from a set of points
@@ -9,7 +10,12 @@ import Konva from 'konva';
  * @param {number} [options.strokeWidth=5] - Width of the stroke
  * @returns {HTMLImageElement} The constructed mask image
  */
-const constructMaskImage = (imageDimensions, points, options = {}) => {
+const constructMaskImage = (
+  imageDimensions,
+  points,
+  cbkFunctionName = 'toBlob',
+  options = {},
+) => {
   const {
     strokeWidth = 50,
     stroke = '#ffffff',
@@ -59,7 +65,10 @@ const constructMaskImage = (imageDimensions, points, options = {}) => {
   layer.add(bgRect);
   layer.add(line);
 
-  const maskImage = stage.toImage();
+  const maskImage = isFunction(stage[cbkFunctionName])
+    ? stage[cbkFunctionName]()
+    : stage.toBlob();
+
   stage.destroy();
   return maskImage;
 };
