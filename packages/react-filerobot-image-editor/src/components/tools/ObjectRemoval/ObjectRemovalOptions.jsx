@@ -96,6 +96,7 @@ const ObjectRemovalOptions = ({
             attrs: { ...attrs },
             updateOriginalSourceFns,
             appStore: store,
+            originalSource,
             getMaskedImage: () =>
               constructMaskImage(originalSource, attrs.points, attrs),
           }),
