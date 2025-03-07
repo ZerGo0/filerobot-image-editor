@@ -17,6 +17,7 @@ import { Slider } from 'components/common';
 import isFunction from 'utils/isFunction';
 import { HIDE_LOADER, SHOW_LOADER } from 'actions';
 import getElementOffsetPosition from 'utils/getElementOffsetPosition';
+import constructMaskImage from 'utils/constructMaskImage';
 import {
   StyledBrushSizeWrapper,
   StyledBrushSizeLabel,
@@ -37,12 +38,14 @@ const ObjectRemovalOptions = ({
   drawInstanceConfig = {},
 }) => {
   const dispatch = useDispatch();
+  const store = useStore();
   const {
     designLayer,
     config,
     zoom: { factor } = {},
     shownImageDimensions: { originalSourceInitialScale } = {},
-  } = useStore();
+    originalSource,
+  } = store;
   const { onDrawEnd, ...toolConfig } = config[TOOLS_IDS.OBJECT_REMOVAL] || {};
 
   const updateOriginalSourceFns = useSetOriginalSource({
@@ -89,7 +92,13 @@ const ObjectRemovalOptions = ({
 
       if (isFunction(onCompleteDrawing)) {
         Promise.resolve(
-          onCompleteDrawing({ attrs: { ...attrs }, updateOriginalSourceFns }),
+          onCompleteDrawing({
+            attrs: { ...attrs },
+            updateOriginalSourceFns,
+            appStore: store,
+            getMaskedImage: () =>
+              constructMaskImage(originalSource, attrs.points, attrs),
+          }),
         ).finally(() => {
           setIsDisabled(false);
           dispatch({ type: HIDE_LOADER });
