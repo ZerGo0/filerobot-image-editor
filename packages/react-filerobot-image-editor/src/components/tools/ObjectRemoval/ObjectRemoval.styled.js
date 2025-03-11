@@ -37,4 +37,15 @@ const StyledBrushCursor = styled.div.attrs(
   z-index: 1111;
 `;
 
-export { StyledBrushSizeWrapper, StyledBrushSizeLabel, StyledBrushCursor };
+const StyledBrushModeWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export {
+  StyledBrushSizeWrapper,
+  StyledBrushSizeLabel,
+  StyledBrushCursor,
+  StyledBrushModeWrapper,
+};

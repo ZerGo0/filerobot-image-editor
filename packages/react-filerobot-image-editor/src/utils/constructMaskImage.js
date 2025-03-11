@@ -5,26 +5,16 @@ import isFunction from './isFunction';
 /**
  * Constructs a mask image from a set of points
  * @param {Object} imageDimensions - The dimensions of the image (width and height)
- * @param {Array} points - The points array defining the mask shape
+ * @param {Array} lines - The lines array defining the mask shape
  * @param {Object} [options={}] - Additional options
  * @param {number} [options.strokeWidth=5] - Width of the stroke
  * @returns {HTMLImageElement} The constructed mask image
  */
 const constructMaskImage = (
   imageDimensions,
-  points,
+  lines,
   cbkFunctionName = 'toBlob',
-  options = {},
 ) => {
-  const {
-    strokeWidth = 50,
-    stroke = '#ffffff',
-    tension = 1,
-    lineCap = 'round',
-    lineJoin = 'round',
-    bezier = true,
-  } = options;
-
   const stage = new Konva.Stage({
     container: document.createElement('div'),
     width: imageDimensions.width,
@@ -32,11 +22,7 @@ const constructMaskImage = (
     listening: false,
   });
 
-  const layer = new Konva.Layer({
-    listening: false,
-    width: imageDimensions.width,
-    height: imageDimensions.height,
-  });
+  const layer = new Konva.Layer({ listening: false });
 
   stage.add(layer);
 
@@ -49,21 +35,31 @@ const constructMaskImage = (
     listening: false,
   });
 
-  const line = new Konva.Line({
-    opacity: 1,
-    points,
-    stroke,
-    strokeWidth,
-    bezier,
-    tension,
-    lineCap,
-    lineJoin,
-    listening: false,
-    closed: false,
-  });
+  const linesInstances = lines.map(
+    ({
+      strokeWidth = 50,
+      stroke = '#ffffff',
+      tension = 1,
+      lineCap = 'round',
+      lineJoin = 'round',
+      bezier = true,
+      points = [],
+    }) =>
+      new Konva.Line({
+        opacity: 1,
+        stroke,
+        strokeWidth,
+        bezier,
+        tension,
+        lineCap,
+        lineJoin,
+        listening: false,
+        closed: false,
+        points,
+      }),
+  );
 
-  layer.add(bgRect);
-  layer.add(line);
+  layer.add(bgRect, ...linesInstances);
 
   const maskImage = isFunction(stage[cbkFunctionName])
     ? stage[cbkFunctionName]()

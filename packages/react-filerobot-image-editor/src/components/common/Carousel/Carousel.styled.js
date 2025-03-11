@@ -15,6 +15,7 @@ const StyledCarousel = styled.ul`
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
+  text-align: center;
 `;
 
 const StyledCarouselItem = styled.li`

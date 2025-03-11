@@ -1,5 +1,6 @@
 export const ROOT_CONTAINER_CLASS_NAME = 'FIE_root';
 export const DESIGN_LAYER_ID = 'FIE_design-layer';
+export const BASE_LAYER_ID = 'FIE_base-layer';
 export const TRANSFORMERS_LAYER_ID = 'FIE_transformers-layer';
 export const IMAGE_NODE_ID = 'FIE_original-image';
 export const NODES_TRANSFORMER_ID = 'FIE_nodes-transformer';

@@ -1,30 +1,32 @@
 /** External Dependencies */
-import React, { useEffect, useMemo, useRef } from 'react';
-import { Group, Layer } from 'react-konva';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { Layer } from 'react-konva';
 import PropTypes from 'prop-types';
 
 /** Internal Dependencies */
 import getDimensionsMinimalRatio from 'utils/getDimensionsMinimalRatio';
 import cropImage from 'utils/cropImage';
-import { DESIGN_LAYER_ID, TOOLS_IDS } from 'utils/constants';
-import { SET_SHOWN_IMAGE_DIMENSIONS } from 'actions';
+import { BASE_LAYER_ID, IMAGE_NODE_ID, TOOLS_IDS } from 'utils/constants';
 import { useStore } from 'hooks';
 import getSizeAfterRotation from 'utils/getSizeAfterRotation';
 import getCenterRotatedPoint from 'utils/getCenterRotatedPoint';
 import getOriginalSourceInitialScale from 'utils/getOriginalSourceInitialScale';
+import LayersBackground from '../LayersBackground';
 
-const DesignLayerWrapper = ({ children, previewGroupRef, ...props }) => {
-  const designLayerRef = useRef();
+// TODO: we should unify this layer and DesignLayer.
+const BaseLayer = ({ children, ...props }) => {
+  const baseLayerRef = useRef();
+  const imageNodeRef = useRef();
 
   const {
     initialCanvasWidth,
     initialCanvasHeight,
     canvasWidth,
     canvasHeight,
-    dispatch,
     toolId,
     canvasScale,
     originalSource = {},
+    shownImageDimensions: imageDimensions,
     adjustments: { rotation = 0, crop = {} } = {},
     resize,
   } = useStore();
@@ -85,34 +87,32 @@ const DesignLayerWrapper = ({ children, previewGroupRef, ...props }) => {
     canvasWidth / (2 * canvasScale) - scaledOriginalSource.width / 2;
   const yPointNoResizeNoCrop =
     canvasHeight / (2 * canvasScale) - scaledOriginalSource.height / 2;
-
-  const imageDimensions = useMemo(
-    () => ({
-      x: Math.round(xPointToCenterImgInCanvas),
-      y: Math.round(yPointToCenterImgInCanvas),
-      abstractX: Math.round(xPointNoResizeNoCrop),
-      abstractY: Math.round(yPointNoResizeNoCrop),
-      width: scaledOriginalSource.width,
-      height: scaledOriginalSource.height,
-      scaledBy: canvasScale,
-      originalSourceInitialScale,
-    }),
-    [
-      canvasScale,
-      xPointToCenterImgInCanvas,
-      yPointToCenterImgInCanvas,
-      xPointNoResizeNoCrop,
-      yPointNoResizeNoCrop,
-      scaledOriginalSource,
-      originalSourceInitialScale,
-    ],
-  );
+  //   () => ({
+  //     x: Math.round(xPointToCenterImgInCanvas),
+  //     y: Math.round(yPointToCenterImgInCanvas),
+  //     abstractX: Math.round(xPointNoResizeNoCrop),
+  //     abstractY: Math.round(yPointNoResizeNoCrop),
+  //     width: scaledOriginalSource.width,
+  //     height: scaledOriginalSource.height,
+  //     scaledBy: canvasScale,
+  //     originalSourceInitialScale,
+  //   }),
+  //   [
+  //     canvasScale,
+  //     xPointToCenterImgInCanvas,
+  //     yPointToCenterImgInCanvas,
+  //     xPointNoResizeNoCrop,
+  //     yPointNoResizeNoCrop,
+  //     scaledOriginalSource,
+  //     originalSourceInitialScale,
+  //   ],
+  // );
 
   const clipFunc = (ctx) => {
     // We are using isSaving to apply ellitpical crop if we're saving the image while in crop tool and it's elliptical crop ratio,
     // As elliptical crop isn't applied while in crop tool.
     const isCroppingAndNotSaving =
-      isCurrentlyCropping && !designLayerRef.current?.attrs?.isSaving;
+      isCurrentlyCropping && !baseLayerRef.current?.attrs?.isSaving;
     const clipBox =
       isCroppingAndNotSaving || crop.noEffect
         ? {
@@ -127,8 +127,8 @@ const DesignLayerWrapper = ({ children, previewGroupRef, ...props }) => {
             y: crop.y || 0,
           };
     cropImage(ctx, { ratio: crop.ratio, ...clipBox }, isCroppingAndNotSaving);
-    if (designLayerRef.current) {
-      designLayerRef.current.setAttrs({
+    if (baseLayerRef.current) {
+      baseLayerRef.current.setAttrs({
         clipX: clipBox.x,
         clipY: clipBox.y,
         clipWidth: clipBox.width,
@@ -137,6 +137,14 @@ const DesignLayerWrapper = ({ children, previewGroupRef, ...props }) => {
       });
     }
   };
+
+  const cacheImageNode = useCallback(() => {
+    if (imageNodeRef?.current) {
+      imageNodeRef.current.cache();
+    } else {
+      setTimeout(cacheImageNode, 0);
+    }
+  }, []);
 
   const sizeAfterRotation = getSizeAfterRotation(
     imageDimensions.width,
@@ -153,17 +161,14 @@ const DesignLayerWrapper = ({ children, previewGroupRef, ...props }) => {
     : 1;
 
   useEffect(() => {
-    if (imageDimensions) {
-      dispatch({
-        type: SET_SHOWN_IMAGE_DIMENSIONS,
-        payload: {
-          shownImageDimensions: imageDimensions,
-          designLayer: designLayerRef.current,
-          previewGroup: previewGroupRef.current,
-        },
-      });
+    if (originalSource) {
+      cacheImageNode();
     }
-  }, [imageDimensions]);
+
+    return () => {
+      imageNodeRef?.current?.clearCache();
+    };
+  }, [originalSource]);
 
   if (
     (!xPointToCenterImgInCanvas && xPointToCenterImgInCanvas !== 0) ||
@@ -207,8 +212,8 @@ const DesignLayerWrapper = ({ children, previewGroupRef, ...props }) => {
 
   return (
     <Layer
-      id={DESIGN_LAYER_ID}
-      ref={designLayerRef}
+      id={BASE_LAYER_ID}
+      ref={baseLayerRef}
       xPadding={xPoint}
       yPadding={yPoint}
       offsetX={scaledOriginalSource.width / 2}
@@ -219,26 +224,22 @@ const DesignLayerWrapper = ({ children, previewGroupRef, ...props }) => {
       scaleY={finalScaleY}
       rotation={isCurrentlyCropping ? 0 : rotation}
       clipFunc={clipFunc}
-      data-testid="FIE-design-layer"
+      data-testid="FIE-base-layer"
       {...props}
     >
-      {children && (
-        <Group
-          xPadding={xPoint}
-          yPadding={yPoint}
-          scaleX={originalSourceInitialScale}
-          scaleY={originalSourceInitialScale}
-        >
-          {children}
-        </Group>
-      )}
+      <LayersBackground
+        width={scaledOriginalSource.width}
+        height={scaledOriginalSource.height}
+        imageNodeRef={imageNodeRef}
+        originalSourceId={IMAGE_NODE_ID}
+      />
+      {children}
     </Layer>
   );
 };
 
-DesignLayerWrapper.propTypes = {
+BaseLayer.propTypes = {
   children: PropTypes.node.isRequired,
-  previewGroupRef: PropTypes.instanceOf(Object),
 };
 
-export default DesignLayerWrapper;
+export default BaseLayer;

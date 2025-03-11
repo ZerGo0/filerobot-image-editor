@@ -12,7 +12,7 @@ const eventsOptions = {
 
 // drawInstance is the instance of the draw object (ex. new Konva.Line(attributes))
 const useDrawPreviewByPointer = ({
-  drawInstance,
+  createNewDrawInstance,
   onPointerStart,
   onPointerMove, // means the pointer is moving while it is not held down
   onHoldPointerMove, // means the pointer is held down and moving
@@ -23,10 +23,13 @@ const useDrawPreviewByPointer = ({
   const { previewGroup, designLayer } = useStore();
   const canvas = previewGroup?.getStage();
 
-  const [tmpDrawAttrs, setTmpDrawAttrs] = useState(() => drawInstance?.attrs);
+  const drawInstanceRef = useRef(createNewDrawInstance());
+  const [tmpDrawAttrs, setTmpDrawAttrs] = useState(
+    () => drawInstanceRef.current.attrs,
+  );
+
   const isDisabledRef = useRef(false);
   const initialAttrsRef = useRef({ ...tmpDrawAttrs });
-  const attrsRef = useRef(tmpDrawAttrs);
 
   const setIsDisabled = useCallback((value) => {
     isDisabledRef.current = value;
@@ -44,33 +47,35 @@ const useDrawPreviewByPointer = ({
           ...newAttrs,
         };
 
-        if (drawInstance) {
-          drawInstance.setAttrs(updatedAttrs);
+        if (drawInstanceRef.current) {
+          drawInstanceRef.current.setAttrs(updatedAttrs);
         }
 
-        if (showPreview && previewGroup?.children.length === 0) {
-          previewGroup.add(drawInstance);
-        }
-
-        attrsRef.current = updatedAttrs;
         return updatedAttrs;
       });
     },
     [canvas, previewGroup, tmpDrawAttrs],
   );
 
-  const resetTmpDrawInstance = useCallback(
-    (resetAttrs = initialAttrsRef) => {
-      canvas.setAttrs({ isDrawing: false });
+  const updateTmpDrawInstance = () => {
+    const newInstance = createNewDrawInstance({
+      ...drawInstanceRef.current.attrs,
+    });
+    previewGroup.add(newInstance);
+    drawInstanceRef.current = newInstance;
+    setTmpDrawAttrs(newInstance.attrs);
+  };
 
+  const resetTmpDrawInstance = useCallback(
+    (resetAttrs = initialAttrsRef.current) => {
       if (previewGroup?.children.length > 0) {
-        previewGroup.removeChildren();
+        previewGroup.destroyChildren();
       }
 
       setTmpDrawAttrs(resetAttrs);
-      attrsRef.current = resetAttrs;
+      drawInstanceRef.current.setAttrs(resetAttrs);
     },
-    [canvas, drawInstance, previewGroup],
+    [canvas, previewGroup],
   );
 
   const getPointerPosition = useCallback(() => {
@@ -91,7 +96,7 @@ const useDrawPreviewByPointer = ({
       if (isFunction(callbackFn)) {
         const returnedAttrs = callbackFn({
           event,
-          attrs: attrsRef.current,
+          attrs: drawInstanceRef.current.attrs,
           position: getPointerPosition(),
           setIsDisabled,
           isDisabled: isDisabledRef.current,
@@ -126,14 +131,16 @@ const useDrawPreviewByPointer = ({
   const handlePointerUp = useCallback(
     (event) => {
       let returnedAttrs;
-      if (attrsRef.current) {
+      if (drawInstanceRef.current) {
         returnedAttrs = onPointerReleased({
           event,
-          attrs: attrsRef.current,
+          attrs: drawInstanceRef.current.attrs,
           setIsDisabled,
           isDisabled: isDisabledRef.current,
         });
       }
+
+      canvas.setAttrs({ isDrawing: false });
 
       // Reset and cleanup
       if (!dontResetPreview) {
@@ -167,6 +174,10 @@ const useDrawPreviewByPointer = ({
     (e) => {
       if (e.target.attrs.draggable || isDisabledRef.current) {
         return;
+      }
+
+      if (dontResetPreview) {
+        updateTmpDrawInstance();
       }
 
       e.evt.preventDefault();

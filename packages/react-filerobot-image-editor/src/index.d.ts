@@ -133,7 +133,7 @@ type objectRemoval = {
   tension?: number;
   lineCap?: lineCap;
   bezier?: boolean;
-  onDrawEnd?: ({
+  onSubmitDraw?: ({
     attrs,
     updateOriginalSourceFns,
   }: {

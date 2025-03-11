@@ -25,10 +25,13 @@ export { default as RichCanvas } from 'components/MainCanvas';
 // Only the canvas wrapper component that should contain the design layer/transformers layer/any other custom layer.
 export { default as CanvasWrapper } from 'components/MainCanvas/MainCanvasWrapper';
 
+// The ready to use base layer contains the original image backgrounds (eg. original image, transparent bg).
+export { default as BaseLayer } from 'components/Layers/BaseLayer';
+
 // The ready to use design layer contains all the annotations, preview and the original image background.
 export { default as DesignLayer } from 'components/Layers/DesignLayer';
 
-// The design layer wrapper only that should contain all the annotations, the original image background and preview (eg. transparent bg) background
+// The design layer wrapper only that should contain all the annotations, and preview.
 // But left for your customization through the children.
 export { default as DesignLayerWrapper } from 'components/Layers/DesignLayer/DesignLayerWrapper';
 

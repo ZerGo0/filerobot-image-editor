@@ -73,7 +73,7 @@ export default {
     lineCap: 'round',
     lineJoin: 'round',
     bezier: true,
-    onDrawEnd: undefined,
+    onSubmitDraw: undefined,
   },
   [TOOLS_IDS.ARROW]: {
     strokeWidth: 6,

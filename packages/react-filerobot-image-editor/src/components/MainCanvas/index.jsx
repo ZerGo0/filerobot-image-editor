@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /** Internal Dependencies */
-import { DesignLayer, TransformersLayer } from 'components/Layers';
+import { BaseLayer, DesignLayer, TransformersLayer } from 'components/Layers';
 import MainCanvasWrapper from './MainCanvasWrapper';
 import 'custom/shapes/FormattedText';
 
@@ -27,6 +27,7 @@ const MainCanvas = ({
       resetOnSourceChange={resetOnSourceChange}
       {...props}
     >
+      <BaseLayer />
       <DesignLayer />
       <TransformersLayer onClickAnnotationDelete={onClickAnnotationDelete} />
     </MainCanvasWrapper>

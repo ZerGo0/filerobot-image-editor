@@ -315,19 +315,22 @@ const config = {
     // },
   },
   // [TOOLS.OBJECT_REMOVAL]: {
-    // stroke: '#000000',
-    // strokeWidth: 100,
-    // onDrawEnd: async ({ attrs, updateOriginalSourceFns }) => {
-    //   return new Promise((resolve) => {
-    //     console.log('🔔 onDrawEnd', attrs, );
-    //     setTimeout(() => {
-    //       updateOriginalSourceFns.loadAndSetOriginalSource('https://scaleflex.cloudimg.io/v7/demo/spencer-davis-unsplash.jpg').then(() => {
-    //         console.log('should be done!!!')
-    //       })
-    //       resolve()
-    //     }, 10000)
-    //   })
-    // }
+  //   stroke: '#000000',
+  //   strokeWidth: 100,
+  //   onSubmitDraw: async ({ attrs, updateOriginalSourceFns, getMaskedImage }) => {
+  //     return new Promise((resolve) => {
+  //       getMaskedImage('toImage').then((img) => {
+  //         document.body.appendChild(img)
+  //       })
+  //       console.log('🔔 onSubmitDraw', attrs);
+  //       setTimeout(() => {
+  //         updateOriginalSourceFns.loadAndSetOriginalSource('https://scaleflex.cloudimg.io/v7/demo/spencer-davis-unsplash.jpg').then(() => {
+  //           console.log('should be done!!!')
+  //         })
+  //         resolve()
+  //       }, 10000)
+  //     });
+  //   }
   // },
   // onBeforeSave: (imageFileInfo) => {
   //   console.log('info', imageFileInfo);

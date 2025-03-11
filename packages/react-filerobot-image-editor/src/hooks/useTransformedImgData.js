@@ -92,24 +92,28 @@ const useTransformedImgData = () => {
       scaleY: 1,
     });
 
-    const [preparedDesignLayer] = preparedCanvas.children; // children[0] = Design layer
-    preparedCanvas.children[1].destroy(); // children[1] = Transformers layer, which is not needed anymore
+    const [preparedBaseLayer, preparedDesignLayer] = preparedCanvas.children;
+    preparedCanvas.children[2].destroy(); // children[2] = Transformers layer, which is not needed anymore
     const imgNode = preparedCanvas.findOne(`#${IMAGE_NODE_ID}`);
     imgNode?.cache();
 
-    const preparedDesignLayerScale = {
+    const preparedLayersScale = {
       x: preparedCanvas.width() / shownImageDimensions.width,
       y: preparedCanvas.height() / shownImageDimensions.height,
     };
-    preparedDesignLayer.setAttrs({
+
+    const layersAttrs = {
       rotation: 0,
       offsetX: 0,
       offsetY: 0,
       x: 0,
       y: 0,
-      scaleX: preparedDesignLayerScale.x,
-      scaleY: preparedDesignLayerScale.y,
-    });
+      scaleX: preparedLayersScale.x,
+      scaleY: preparedLayersScale.y,
+    };
+    preparedBaseLayer.setAttrs(layersAttrs);
+
+    preparedDesignLayer.setAttrs(layersAttrs);
 
     const {
       name,

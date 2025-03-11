@@ -18,10 +18,12 @@ import isFunction from 'utils/isFunction';
 import { HIDE_LOADER, SHOW_LOADER } from 'actions';
 import getElementOffsetPosition from 'utils/getElementOffsetPosition';
 import constructMaskImage from 'utils/constructMaskImage';
+import { Button, Label, Switcher } from '@scaleflex/ui/core';
 import {
   StyledBrushSizeWrapper,
   StyledBrushSizeLabel,
   StyledBrushCursor,
+  StyledBrushModeWrapper,
 } from './ObjectRemoval.styled';
 
 let cursorTimeout = null;
@@ -29,10 +31,32 @@ const getObjectPathPoints = ({ attrs, position }) => ({
   points: (attrs.points || []).concat(position),
 });
 
+const MASK_STROKE = '#ffffff';
+const UNMASK_STROKE = '#000000';
+
+const switcherProps = {
+  id: 'FIE_object-removal-tool-brush-mode-toggle',
+};
+
+const getDrawInstance = ({ toolConfig, drawInstanceConfig, isHighlightMode }) =>
+  new Konva.Line({
+    ...toolConfig,
+    ...drawInstanceConfig,
+    id: randomId(TOOLS_IDS.OBJECT_REMOVAL),
+    name: TOOLS_IDS.OBJECT_REMOVAL,
+    points: [],
+    stroke: isHighlightMode ? MASK_STROKE : UNMASK_STROKE,
+    ...(!isHighlightMode && { opacity: 1 }),
+    globalCompositeOperation: isHighlightMode
+      ? 'source-over'
+      : 'destination-out',
+    listening: false,
+  });
+
 const ObjectRemovalOptions = ({
   t,
   renderCustomOptionsChildren,
-  onDrawFinish,
+  onSubmitDraw,
   minSize = 1,
   maxSize = 300,
   drawInstanceConfig = {},
@@ -46,7 +70,10 @@ const ObjectRemovalOptions = ({
     shownImageDimensions: { originalSourceInitialScale } = {},
     originalSource,
   } = store;
-  const { onDrawEnd, ...toolConfig } = config[TOOLS_IDS.OBJECT_REMOVAL] || {};
+  const { onSubmitDraw: onSubmitDrawConfig, ...toolConfig } =
+    config[TOOLS_IDS.OBJECT_REMOVAL] || {};
+  const [isHighlightMode, setIsHighlightMode] = useState(true);
+  const [objectPathsAttrs, setObjectPathsAttrs] = useState([]);
 
   const updateOriginalSourceFns = useSetOriginalSource({
     resetOnSourceChange: false,
@@ -65,7 +92,7 @@ const ObjectRemovalOptions = ({
     [designLayer],
   );
 
-  const onCompleteDrawing = onDrawFinish || onDrawEnd;
+  const onSubmitCbk = onSubmitDraw || onSubmitDrawConfig;
 
   const hideBrushCursor = () => {
     setCursorData((latest) => ({ ...latest, display: 'none' }));
@@ -84,41 +111,10 @@ const ObjectRemovalOptions = ({
     setCursorData((latest) => ({ ...latest, ...newCursorData }));
   }, []);
 
-  const handlePointerUp = ({ attrs, setIsDisabled }) => {
+  const handlePointerUp = ({ attrs }) => {
     if (attrs.points.length > 0) {
-      dispatch({ type: SHOW_LOADER });
-      setIsDisabled(true);
-      hideBrushCursor();
-
-      if (isFunction(onCompleteDrawing)) {
-        Promise.resolve(
-          onCompleteDrawing({
-            attrs: { ...attrs },
-            updateOriginalSourceFns,
-            appStore: store,
-            originalSource,
-            // cbkFunctionName => toBlob, toImage, toDataURL, toCanvas
-            getMaskedImage: (cbkFunctionName = 'toBlob') =>
-              constructMaskImage(
-                originalSource,
-                attrs.points,
-                cbkFunctionName,
-                attrs,
-              ),
-          }),
-        ).finally(() => {
-          setIsDisabled(false);
-          dispatch({ type: HIDE_LOADER });
-          showBrushCursor();
-        });
-      } else {
-        setIsDisabled(false);
-        dispatch({ type: HIDE_LOADER });
-        showBrushCursor();
-      }
+      setObjectPathsAttrs((latest) => [...latest, attrs]);
     }
-
-    return { ...attrs, points: [] };
   };
 
   const onPointerMove = useCallback(
@@ -143,21 +139,26 @@ const ObjectRemovalOptions = ({
   );
 
   const drawObjectOptions = useDrawPreviewByPointer({
-    drawInstance: new Konva.Line({
-      ...toolConfig,
-      ...drawInstanceConfig,
-      id: randomId(TOOLS_IDS.OBJECT_REMOVAL),
-      name: TOOLS_IDS.OBJECT_REMOVAL,
-      points: [],
-    }),
+    createNewDrawInstance: (newProps) =>
+      getDrawInstance({
+        toolConfig,
+        drawInstanceConfig: { ...drawInstanceConfig, ...newProps },
+        isHighlightMode,
+      }),
     onPointerMove,
     onPointerStart: getObjectPathPoints,
     onHoldPointerMove: getObjectPathPoints,
     onPointerReleased: handlePointerUp,
     onPointerLeaveCanvas: hideBrushCursor,
+    dontResetPreview: true,
   });
-  const { tmpDrawAttrs: objectPath, updateTmpDrawAttrs: updateObjectPath } =
-    drawObjectOptions;
+
+  const {
+    tmpDrawAttrs: objectPath,
+    updateTmpDrawAttrs: updateObjectPath,
+    setIsDisabled,
+    resetTmpDrawInstance,
+  } = drawObjectOptions;
 
   const changeBrushSize = (value) => {
     const newValue = +value;
@@ -179,6 +180,56 @@ const ObjectRemovalOptions = ({
     }, 1000);
   };
 
+  const toggleHighlightMode = () => {
+    setIsHighlightMode((latest) => !latest);
+  };
+
+  const submitRemoval = () => {
+    if (objectPathsAttrs.length > 0) {
+      dispatch({ type: SHOW_LOADER });
+      setIsDisabled(true);
+      hideBrushCursor();
+      if (isFunction(onSubmitCbk)) {
+        Promise.resolve(
+          onSubmitCbk({
+            attrs: { ...objectPath },
+            updateOriginalSourceFns,
+            appStore: store,
+            setIsDisabled,
+            resetTmpDrawInstance,
+            objectPathsAttrs,
+            originalSource,
+            // cbkFunctionName => toBlob, toImage, toDataURL, toCanvas
+            getMaskedImage: (cbkFunctionName = 'toBlob') =>
+              constructMaskImage(
+                originalSource,
+                objectPathsAttrs,
+                cbkFunctionName,
+              ),
+          }),
+        ).finally(() => {
+          setIsDisabled(false);
+          dispatch({ type: HIDE_LOADER });
+          showBrushCursor();
+          resetTmpDrawInstance({
+            ...objectPathsAttrs[objectPathsAttrs.length - 1],
+            points: [],
+          });
+          setObjectPathsAttrs([]);
+        });
+      } else {
+        setIsDisabled(false);
+        dispatch({ type: HIDE_LOADER });
+        showBrushCursor();
+        resetTmpDrawInstance({
+          ...objectPathsAttrs[objectPathsAttrs.length - 1],
+          points: [],
+        });
+        setObjectPathsAttrs([]);
+      }
+    }
+  };
+
   const renderOptions = () => {
     if (isFunction(renderCustomOptionsChildren)) {
       return renderCustomOptionsChildren({
@@ -188,23 +239,45 @@ const ObjectRemovalOptions = ({
     }
 
     return (
-      <StyledBrushSizeWrapper
-        className="FIE_object-removal-tool-options"
-        data-testid="FIE_object-removal-tool-options"
-      >
-        <StyledBrushSizeLabel>
-          {t('objectRemovalBrushSize')}
-        </StyledBrushSizeLabel>
-        <Slider
-          data-testid="FIE_object-removal-tool-brush-size"
-          annotation="px"
-          min={minSize}
-          max={maxSize}
-          onChange={changeBrushSize}
-          value={+objectPath.strokeWidth}
-          width="100%"
-        />
-      </StyledBrushSizeWrapper>
+      <div data-testid="FIE_object-removal-tool-options">
+        <StyledBrushSizeWrapper data-testid="FIE_object-removal-tool-brush-size-option">
+          <StyledBrushSizeLabel>
+            {t('objectRemovalBrushSize')}
+          </StyledBrushSizeLabel>
+          <Slider
+            data-testid="FIE_object-removal-tool-brush-size"
+            annotation="px"
+            min={minSize}
+            max={maxSize}
+            onChange={changeBrushSize}
+            value={+objectPath.strokeWidth}
+            width="100%"
+          />
+        </StyledBrushSizeWrapper>
+        <StyledBrushModeWrapper data-testid="FIE_object-removal-brush-mode-toggle">
+          <Label htmlFor="FIE_object-removal-tool-brush-mode-toggle">
+            {t('objectRemovalEraseMode')}
+          </Label>
+          <Switcher
+            switcherProps={switcherProps}
+            data-testid="FIE_object-removal-tool-brush-mode-toggle"
+            label={t('objectRemovalBrushMode')}
+            onChange={toggleHighlightMode}
+            checked={isHighlightMode}
+            size="md"
+          />
+          <Label htmlFor="FIE_object-removal-tool-brush-mode-toggle">
+            {t('objectRemovalHighlightMode')}
+          </Label>
+          <Button
+            onClick={submitRemoval}
+            size="sm"
+            data-testid="FIE_object-removal-tool-trigger-button"
+          >
+            {t('objectRemovalTriggerButton')}
+          </Button>
+        </StyledBrushModeWrapper>
+      </div>
     );
   };
 
@@ -234,7 +307,7 @@ const ObjectRemovalOptions = ({
 
 ObjectRemovalOptions.propTypes = {
   t: PropTypes.func.isRequired,
-  onDrawFinish: PropTypes.func,
+  onSubmitDraw: PropTypes.func,
   minSize: PropTypes.number,
   maxSize: PropTypes.number,
   drawInstanceConfig: PropTypes.instanceOf(Object),
