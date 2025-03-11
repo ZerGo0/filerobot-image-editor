@@ -27,8 +27,9 @@ import {
 } from './ObjectRemoval.styled';
 
 let cursorTimeout = null;
-const getObjectPathPoints = ({ attrs, position }) => ({
+const getObjectPathPoints = ({ attrs, position, strokeWidth }) => ({
   points: (attrs.points || []).concat(position),
+  strokeWidth: strokeWidth || attrs.strokeWidth,
 });
 
 const MASK_STROKE = '#ffffff';
@@ -37,6 +38,7 @@ const UNMASK_STROKE = '#000000';
 const switcherProps = {
   id: 'FIE_object-removal-tool-brush-mode-toggle',
 };
+const DEFAULT_OPACITY = 0.65;
 
 const getDrawInstance = ({ toolConfig, drawInstanceConfig, isHighlightMode }) =>
   new Konva.Line({
@@ -46,7 +48,7 @@ const getDrawInstance = ({ toolConfig, drawInstanceConfig, isHighlightMode }) =>
     name: TOOLS_IDS.OBJECT_REMOVAL,
     points: [],
     stroke: isHighlightMode ? MASK_STROKE : UNMASK_STROKE,
-    ...(!isHighlightMode && { opacity: 1 }),
+    opacity: !isHighlightMode ? 1 : toolConfig?.opacity || DEFAULT_OPACITY,
     globalCompositeOperation: isHighlightMode
       ? 'source-over'
       : 'destination-out',
@@ -74,6 +76,7 @@ const ObjectRemovalOptions = ({
     config[TOOLS_IDS.OBJECT_REMOVAL] || {};
   const [isHighlightMode, setIsHighlightMode] = useState(true);
   const [objectPathsAttrs, setObjectPathsAttrs] = useState([]);
+  const [brushSize, setBrushSize] = useState(toolConfig.strokeWidth || minSize);
 
   const updateOriginalSourceFns = useSetOriginalSource({
     resetOnSourceChange: false,
@@ -146,7 +149,8 @@ const ObjectRemovalOptions = ({
         isHighlightMode,
       }),
     onPointerMove,
-    onPointerStart: getObjectPathPoints,
+    onPointerStart: (args) =>
+      getObjectPathPoints({ ...args, strokeWidth: brushSize }),
     onHoldPointerMove: getObjectPathPoints,
     onPointerReleased: handlePointerUp,
     onPointerLeaveCanvas: hideBrushCursor,
@@ -155,19 +159,13 @@ const ObjectRemovalOptions = ({
 
   const {
     tmpDrawAttrs: objectPath,
-    updateTmpDrawAttrs: updateObjectPath,
     setIsDisabled,
     resetTmpDrawInstance,
   } = drawObjectOptions;
 
   const changeBrushSize = (value) => {
     const newValue = +value;
-    updateObjectPath(
-      {
-        strokeWidth: newValue,
-      },
-      false,
-    );
+    setBrushSize(newValue);
 
     const { offsetWidth, offsetHeight } = canvasContainer;
     const x = offsetWidth / 2 - newValue / 2;
@@ -250,7 +248,7 @@ const ObjectRemovalOptions = ({
             min={minSize}
             max={maxSize}
             onChange={changeBrushSize}
-            value={+objectPath.strokeWidth}
+            value={+brushSize}
             width="100%"
           />
         </StyledBrushSizeWrapper>
@@ -288,9 +286,9 @@ const ObjectRemovalOptions = ({
       {canvasContainer &&
         createPortal(
           <StyledBrushCursor
-            $size={objectPath.strokeWidth}
+            $size={brushSize}
             $color={objectPath.stroke}
-            $opacity={objectPath.opacity}
+            $opacity={toolConfig?.opacity || DEFAULT_OPACITY}
             $zoom={factor * originalSourceInitialScale}
             $display={cursorData.display}
             $x={cursorData.x}
