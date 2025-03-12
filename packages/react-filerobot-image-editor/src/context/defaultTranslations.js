@@ -119,8 +119,7 @@ export default {
   aiTab: 'AI',
   objectRemovalTool: 'Object removal',
   objectRemovalBrushSize: 'Brush size',
-  objectRemovalBrushMode: 'Brush mode',
-  objectRemovalHighlightMode: 'Highlight',
-  objectRemovalEraseMode: 'Erase',
-  objectRemovalTriggerButton: 'Trigger',
+  objectRemovalApplyButton: 'Apply',
+  objectRemovalSquareBrushTypeTooltip: 'Enable square brush type',
+  objectRemovalEraseModeTooltip: 'Enable unselect mode',
 };

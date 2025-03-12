@@ -3,6 +3,8 @@ import React, { useCallback, useRef, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import Konva from 'konva';
 import PropTypes from 'prop-types';
+import { Button, IconButton, TooltipV2 } from '@scaleflex/ui/core';
+import { CropSquareOutline, Rename, Shine } from '@scaleflex/icons';
 
 /** Internal Dependencies */
 import {
@@ -18,7 +20,6 @@ import isFunction from 'utils/isFunction';
 import { HIDE_LOADER, SHOW_LOADER } from 'actions';
 import getElementOffsetPosition from 'utils/getElementOffsetPosition';
 import constructMaskImage from 'utils/constructMaskImage';
-import { Button, Label, Switcher } from '@scaleflex/ui/core';
 import {
   StyledBrushSizeWrapper,
   StyledBrushSizeLabel,
@@ -35,15 +36,21 @@ const getObjectPathPoints = ({ attrs, position, strokeWidth }) => ({
 const MASK_STROKE = '#ffffff';
 const UNMASK_STROKE = '#000000';
 
-const switcherProps = {
-  id: 'FIE_object-removal-tool-brush-mode-toggle',
-};
 const DEFAULT_OPACITY = 0.65;
 
-const getDrawInstance = ({ toolConfig, drawInstanceConfig, isHighlightMode }) =>
+const getDrawInstance = ({
+  toolConfig,
+  drawInstanceConfig,
+  isHighlightMode,
+  isSquareBrushType,
+}) =>
   new Konva.Line({
     ...toolConfig,
     ...drawInstanceConfig,
+    lineJoin: isSquareBrushType ? 'miter' : 'round',
+    lineCap: isSquareBrushType ? 'butt' : 'round',
+    tension: isSquareBrushType ? 0 : toolConfig.tension || 1,
+    bezier: isSquareBrushType ? false : toolConfig.bezier || true,
     id: randomId(TOOLS_IDS.OBJECT_REMOVAL),
     name: TOOLS_IDS.OBJECT_REMOVAL,
     points: [],
@@ -77,6 +84,7 @@ const ObjectRemovalOptions = ({
   const [isHighlightMode, setIsHighlightMode] = useState(true);
   const [objectPathsAttrs, setObjectPathsAttrs] = useState([]);
   const [brushSize, setBrushSize] = useState(toolConfig.strokeWidth || minSize);
+  const [isSquareBrushType, setIsSquareBrushType] = useState(false);
 
   const updateOriginalSourceFns = useSetOriginalSource({
     resetOnSourceChange: false,
@@ -147,6 +155,7 @@ const ObjectRemovalOptions = ({
         toolConfig,
         drawInstanceConfig: { ...drawInstanceConfig, ...newProps },
         isHighlightMode,
+        isSquareBrushType,
       }),
     onPointerMove,
     onPointerStart: (args) =>
@@ -182,7 +191,7 @@ const ObjectRemovalOptions = ({
     setIsHighlightMode((latest) => !latest);
   };
 
-  const submitRemoval = () => {
+  const applyRemoval = () => {
     if (objectPathsAttrs.length > 0) {
       dispatch({ type: SHOW_LOADER });
       setIsDisabled(true);
@@ -228,6 +237,10 @@ const ObjectRemovalOptions = ({
     }
   };
 
+  const toggleSquareBrushType = () => {
+    setIsSquareBrushType((latest) => !latest);
+  };
+
   const renderOptions = () => {
     if (isFunction(renderCustomOptionsChildren)) {
       return renderCustomOptionsChildren({
@@ -237,7 +250,29 @@ const ObjectRemovalOptions = ({
     }
 
     return (
-      <div data-testid="FIE_object-removal-tool-options">
+      <StyledBrushModeWrapper data-testid="FIE_object-removal-brush-mode-toggle">
+        <TooltipV2 title={t('objectRemovalEraseModeTooltip')}>
+          <IconButton
+            onClick={toggleHighlightMode}
+            size="sm"
+            data-testid="FIE_object-removal-tool-brush-mode-toggle"
+            active={!isHighlightMode}
+            color="base"
+          >
+            <Rename />
+          </IconButton>
+        </TooltipV2>
+        <TooltipV2 title={t('objectRemovalSquareBrushTypeTooltip')}>
+          <IconButton
+            onClick={toggleSquareBrushType}
+            size="sm"
+            data-testid="FIE_object-removal-tool-brush-square-type-toggle"
+            active={isSquareBrushType}
+            color="base"
+          >
+            <CropSquareOutline />
+          </IconButton>
+        </TooltipV2>
         <StyledBrushSizeWrapper data-testid="FIE_object-removal-tool-brush-size-option">
           <StyledBrushSizeLabel>
             {t('objectRemovalBrushSize')}
@@ -252,30 +287,15 @@ const ObjectRemovalOptions = ({
             width="100%"
           />
         </StyledBrushSizeWrapper>
-        <StyledBrushModeWrapper data-testid="FIE_object-removal-brush-mode-toggle">
-          <Label htmlFor="FIE_object-removal-tool-brush-mode-toggle">
-            {t('objectRemovalEraseMode')}
-          </Label>
-          <Switcher
-            switcherProps={switcherProps}
-            data-testid="FIE_object-removal-tool-brush-mode-toggle"
-            label={t('objectRemovalBrushMode')}
-            onChange={toggleHighlightMode}
-            checked={isHighlightMode}
-            size="md"
-          />
-          <Label htmlFor="FIE_object-removal-tool-brush-mode-toggle">
-            {t('objectRemovalHighlightMode')}
-          </Label>
-          <Button
-            onClick={submitRemoval}
-            size="sm"
-            data-testid="FIE_object-removal-tool-trigger-button"
-          >
-            {t('objectRemovalTriggerButton')}
-          </Button>
-        </StyledBrushModeWrapper>
-      </div>
+        <Button
+          onClick={applyRemoval}
+          size="sm"
+          data-testid="FIE_object-removal-tool-apply-button"
+          startIcon={<Shine />}
+        >
+          {t('objectRemovalApplyButton')}
+        </Button>
+      </StyledBrushModeWrapper>
     );
   };
 
@@ -293,6 +313,7 @@ const ObjectRemovalOptions = ({
             $display={cursorData.display}
             $x={cursorData.x}
             $y={cursorData.y}
+            $isSquareBrushType={isSquareBrushType}
             ref={objectPathCursorRef}
             data-testid="FIE_object-removal-tool-brush-cursor"
           />,

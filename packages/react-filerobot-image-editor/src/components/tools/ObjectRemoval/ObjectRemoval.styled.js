@@ -7,8 +7,8 @@ const StyledBrushSizeLabel = styled(Label)`
 `;
 
 const StyledBrushSizeWrapper = styled.div`
-  width: 100%;
   max-width: 330px;
+  min-width: 200px;
 `;
 
 const StyledBrushCursor = styled.div.attrs(
@@ -22,7 +22,8 @@ const StyledBrushCursor = styled.div.attrs(
   }),
 )`
   transform-origin: center;
-  border-radius: 50%;
+  border-radius: ${({ $isSquareBrushType }) =>
+    $isSquareBrushType ? '0' : '50%'};
   position: absolute;
   top: 0;
   left: 0;
