@@ -60,16 +60,33 @@ const useAnnotation = (
     setAnnotation({ ...savableAnnotationData, selectOnSet });
   }, []);
 
-  const updateTmpAnnotation = useDebouncedCallback((updatesObjOrFn) => {
-    setTmpAnnotation((latest) => ({
-      ...latest,
-      shouldSave: false,
-      neverSave: false,
-      ...(typeof updatesObjOrFn === 'function'
-        ? updatesObjOrFn(latest)
-        : updatesObjOrFn),
-    }));
-  }, 15);
+  const updateTmpAnnotation = useDebouncedCallback(
+    (
+      updatesObjOrFn,
+      { overrideWithDefaults = false, overrideWithoutDefaults = false } = {},
+    ) => {
+      setTmpAnnotation((latest) => {
+        const updatedAnnotation =
+          typeof updatesObjOrFn === 'function'
+            ? updatesObjOrFn(latest)
+            : updatesObjOrFn;
+        const annotationPrevious = overrideWithDefaults
+          ? {
+              ...config.annotationsCommon,
+              ...config[updatedAnnotation.name],
+            }
+          : latest;
+
+        return {
+          ...(overrideWithoutDefaults ? {} : annotationPrevious),
+          shouldSave: false,
+          neverSave: false,
+          ...updatedAnnotation,
+        };
+      });
+    },
+    15,
+  );
 
   const getAnnotationInitialProps = useCallback(
     (currentAnnotation, newAnnotationName) => {
