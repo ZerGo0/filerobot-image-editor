@@ -1,7 +1,7 @@
 /** External Dependencies */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Remove as ObjectRemovalIcon } from '@scaleflex/icons/remove';
+import { RemoveBrush as ObjectRemovalIcon } from '@scaleflex/icons/remove-brush';
 
 /** Internal Dependencies */
 import ToolsBarItemButton from 'components/ToolsBar/ToolsBarItemButton';
