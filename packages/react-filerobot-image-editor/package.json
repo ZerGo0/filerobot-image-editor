@@ -29,8 +29,9 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.17.2",
-    "@scaleflex/icons": "2.10.27",
-    "@scaleflex/ui": "2.10.27",
+    "@scaleflex/icons": "3.0.0-beta.10",
+    "@scaleflex/ui": "3.0.0-beta.10",
+    "@tippyjs/react": "^4.2.6",
     "konva": "9.3.18",
     "prop-types": "15.7.2",
     "react-konva-utils": "1.1.0"

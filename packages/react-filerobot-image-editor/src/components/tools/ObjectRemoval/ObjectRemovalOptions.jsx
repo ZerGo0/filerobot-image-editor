@@ -3,8 +3,8 @@ import React, { useCallback, useRef, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import Konva from 'konva';
 import PropTypes from 'prop-types';
-import { Button, IconButton, TooltipV2 } from '@scaleflex/ui/core';
-import { CropSquareOutline, Rename, Shine } from '@scaleflex/icons';
+import { Button } from '@scaleflex/ui/core';
+import { Shine } from '@scaleflex/icons';
 
 /** Internal Dependencies */
 import {
@@ -15,17 +15,17 @@ import {
 } from 'hooks';
 import { TOOLS_IDS } from 'utils/constants';
 import randomId from 'utils/randomId';
-import { Slider } from 'components/common';
 import isFunction from 'utils/isFunction';
 import { HIDE_LOADER, SHOW_LOADER } from 'actions';
 import getElementOffsetPosition from 'utils/getElementOffsetPosition';
 import constructMaskImage from 'utils/constructMaskImage';
 import {
-  StyledBrushSizeWrapper,
-  StyledBrushSizeLabel,
   StyledBrushCursor,
-  StyledBrushModeWrapper,
+  StyledRemoveObjectOptionsWrapper,
 } from './ObjectRemoval.styled';
+import ObjectRemovalBrushType from './ObjectRemovalBrushType';
+import ObjectRemovalBrushMode from './ObjectRemovalBrushMode';
+import ObjectRemovalBrushSize from './ObjectRemovalBrushSize';
 
 let cursorTimeout = null;
 const getObjectPathPoints = ({ attrs, position, strokeWidth }) => ({
@@ -33,10 +33,10 @@ const getObjectPathPoints = ({ attrs, position, strokeWidth }) => ({
   strokeWidth: strokeWidth || attrs.strokeWidth,
 });
 
-const MASK_STROKE = '#ffffff';
+const MASK_STROKE = 'rgba(104, 121, 235)';
 const UNMASK_STROKE = '#000000';
 
-const DEFAULT_OPACITY = 0.65;
+const DEFAULT_OPACITY = 0.7;
 
 const getDrawInstance = ({
   toolConfig,
@@ -174,6 +174,10 @@ const ObjectRemovalOptions = ({
 
   const changeBrushSize = (value) => {
     const newValue = +value;
+    if (Number.isNaN(newValue) || newValue > maxSize) {
+      return;
+    }
+
     setBrushSize(newValue);
 
     const { offsetWidth, offsetHeight } = canvasContainer;
@@ -187,16 +191,21 @@ const ObjectRemovalOptions = ({
     }, 1000);
   };
 
-  const toggleHighlightMode = () => {
-    setIsHighlightMode((latest) => !latest);
-  };
-
   const applyRemoval = () => {
     if (objectPathsAttrs.length > 0) {
-      dispatch({ type: SHOW_LOADER });
+      const hasSubmitCallback = isFunction(onSubmitCbk);
+      const abortController = new AbortController();
+      dispatch({
+        type: SHOW_LOADER,
+        payload: {
+          text: t('objectRemovalApplyingText'),
+          cancelFn: hasSubmitCallback ? () => abortController.abort() : null,
+        },
+      });
+
       setIsDisabled(true);
       hideBrushCursor();
-      if (isFunction(onSubmitCbk)) {
+      if (hasSubmitCallback) {
         Promise.resolve(
           onSubmitCbk({
             attrs: { ...objectPath },
@@ -206,6 +215,8 @@ const ObjectRemovalOptions = ({
             resetTmpDrawInstance,
             objectPathsAttrs,
             originalSource,
+            cancellationSignal: abortController.signal,
+            cancelFn: abortController.abort,
             // cbkFunctionName => toBlob, toImage, toDataURL, toCanvas
             getMaskedImage: (cbkFunctionName = 'toBlob') =>
               constructMaskImage(
@@ -237,10 +248,6 @@ const ObjectRemovalOptions = ({
     }
   };
 
-  const toggleSquareBrushType = () => {
-    setIsSquareBrushType((latest) => !latest);
-  };
-
   const renderOptions = () => {
     if (isFunction(renderCustomOptionsChildren)) {
       return renderCustomOptionsChildren({
@@ -250,52 +257,34 @@ const ObjectRemovalOptions = ({
     }
 
     return (
-      <StyledBrushModeWrapper data-testid="FIE_object-removal-brush-mode-toggle">
-        <TooltipV2 title={t('objectRemovalEraseModeTooltip')}>
-          <IconButton
-            onClick={toggleHighlightMode}
-            size="sm"
-            data-testid="FIE_object-removal-tool-brush-mode-toggle"
-            active={!isHighlightMode}
-            color="base"
-          >
-            <Rename />
-          </IconButton>
-        </TooltipV2>
-        <TooltipV2 title={t('objectRemovalSquareBrushTypeTooltip')}>
-          <IconButton
-            onClick={toggleSquareBrushType}
-            size="sm"
-            data-testid="FIE_object-removal-tool-brush-square-type-toggle"
-            active={isSquareBrushType}
-            color="base"
-          >
-            <CropSquareOutline />
-          </IconButton>
-        </TooltipV2>
-        <StyledBrushSizeWrapper data-testid="FIE_object-removal-tool-brush-size-option">
-          <StyledBrushSizeLabel>
-            {t('objectRemovalBrushSize')}
-          </StyledBrushSizeLabel>
-          <Slider
-            data-testid="FIE_object-removal-tool-brush-size"
-            annotation="px"
-            min={minSize}
-            max={maxSize}
-            onChange={changeBrushSize}
-            value={+brushSize}
-            width="100%"
-          />
-        </StyledBrushSizeWrapper>
+      <StyledRemoveObjectOptionsWrapper data-testid="FIE_object-removal-brush-mode-toggle">
+        <ObjectRemovalBrushMode
+          isHighlightMode={isHighlightMode}
+          setIsHighlightMode={setIsHighlightMode}
+          t={t}
+        />
+        <ObjectRemovalBrushType
+          isSquareBrushType={isSquareBrushType}
+          setIsSquareBrushType={setIsSquareBrushType}
+          t={t}
+        />
+        <ObjectRemovalBrushSize
+          t={t}
+          minSize={minSize}
+          maxSize={maxSize}
+          brushSize={brushSize}
+          changeBrushSize={changeBrushSize}
+        />
         <Button
           onClick={applyRemoval}
           size="sm"
           data-testid="FIE_object-removal-tool-apply-button"
           startIcon={<Shine />}
+          color="secondary"
         >
           {t('objectRemovalApplyButton')}
         </Button>
-      </StyledBrushModeWrapper>
+      </StyledRemoveObjectOptionsWrapper>
     );
   };
 
@@ -307,13 +296,12 @@ const ObjectRemovalOptions = ({
         createPortal(
           <StyledBrushCursor
             $size={brushSize}
-            $color={objectPath.stroke}
-            $opacity={toolConfig?.opacity || DEFAULT_OPACITY}
             $zoom={factor * originalSourceInitialScale}
             $display={cursorData.display}
             $x={cursorData.x}
             $y={cursorData.y}
             $isSquareBrushType={isSquareBrushType}
+            $isHighlightMode={isHighlightMode}
             ref={objectPathCursorRef}
             data-testid="FIE_object-removal-tool-brush-cursor"
           />,

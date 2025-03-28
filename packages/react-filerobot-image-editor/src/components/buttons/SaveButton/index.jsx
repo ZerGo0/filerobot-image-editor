@@ -49,7 +49,7 @@ const SaveButton = ({
     dispatch,
     originalSource,
     resize,
-    isLoadingGlobally,
+    loadingData: { isLoadingGlobally } = {},
     haveNotSavedChanges,
     feedback,
     hasUndo,

@@ -6,7 +6,7 @@ import {
   ImageFilters,
   Watermark,
   Resize,
-  Ai,
+  AiToolsOutline,
 } from '@scaleflex/icons';
 
 /** Internal Dependencies */
@@ -47,7 +47,7 @@ export const AVAILABLE_TABS = [
   },
   {
     id: TABS_IDS.AI,
-    icon: Ai,
+    icon: AiToolsOutline,
     hideFn: ({ useAiTab, useCloudimage }) => !useAiTab || useCloudimage,
   },
 ];

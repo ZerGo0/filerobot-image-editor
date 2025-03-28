@@ -1,5 +1,6 @@
 /** External Dependencies */
 import { Loading } from '@scaleflex/icons';
+import { Button } from '@scaleflex/ui/core';
 import styled, { keyframes } from 'styled-components';
 
 const spin = keyframes`
@@ -7,7 +8,7 @@ const spin = keyframes`
 `;
 
 const StyledSpinnerWrapper = styled.div`
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.78);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,10 +20,15 @@ const StyledSpinnerWrapper = styled.div`
   left: 0;
   flex-direction: column;
   user-select: none;
+  gap: 12px;
+`;
+
+const StyledSpinnerCancelButton = styled(Button)`
+  margin-top: 4px;
 `;
 
 const StyledSpinner = styled(Loading)`
   animation: ${spin} 1.2s infinite;
 `;
 
-export { StyledSpinnerWrapper, StyledSpinner };
+export { StyledSpinnerWrapper, StyledSpinner, StyledSpinnerCancelButton };

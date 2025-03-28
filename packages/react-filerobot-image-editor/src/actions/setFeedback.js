@@ -2,7 +2,11 @@ export const SET_FEEDBACK = 'SET_FEEDBACK';
 
 const setFeedback = (state, payload) => ({
   ...state,
-  isLoadingGlobally: false,
+  loadingData: {
+    isLoadingGlobally: false,
+    text: '',
+    cancelFn: null,
+  },
   feedback: payload.feedback || {},
 });
 

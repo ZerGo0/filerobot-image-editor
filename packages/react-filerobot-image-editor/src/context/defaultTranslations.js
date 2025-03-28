@@ -120,6 +120,10 @@ export default {
   objectRemovalTool: 'Object removal',
   objectRemovalBrushSize: 'Brush size',
   objectRemovalApplyButton: 'Apply',
-  objectRemovalSquareBrushTypeTooltip: 'Enable square brush type',
-  objectRemovalEraseModeTooltip: 'Enable unselect mode',
+  objectRemovalBrushMode: 'Brush mode',
+  objectRemovalBrushCircleType: 'Circle brush',
+  objectRemovalBrushSquareType: 'Square brush',
+  objectRemovalApplyingText: 'Removing the selected area',
+  objectRemovalMarkModeTooltip: 'Mark mode',
+  objectRemovalUnMarkModeTooltip: 'Unmark mode',
 };

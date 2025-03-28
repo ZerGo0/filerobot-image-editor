@@ -58,7 +58,11 @@ const getInitialAppState = (config = {}) => {
       y: null,
       customLabel: null,
     },
-    isLoadingGlobally: true,
+    loadingData: {
+      isLoadingGlobally: true,
+      text: '',
+      cancelFn: null,
+    },
     selectionsIds: [],
     tabId: config.defaultTabId || null,
     toolId: config.defaultToolId || null,

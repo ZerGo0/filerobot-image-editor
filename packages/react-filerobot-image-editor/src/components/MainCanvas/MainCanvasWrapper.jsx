@@ -92,8 +92,9 @@ const MainCanvasWrapper = ({
   return (
     <>
       <Spinner
-        isLoading={providedAppContext.isLoadingGlobally}
+        loadingData={providedAppContext.loadingData}
         theme={providedAppContext.theme}
+        t={providedAppContext.t}
       />
       <CanvasContainer
         className="FIE_canvas-container"
