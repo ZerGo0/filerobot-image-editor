@@ -47,8 +47,8 @@ const getDrawInstance = ({
   new Konva.Line({
     ...toolConfig,
     ...drawInstanceConfig,
-    lineJoin: isSquareBrushType ? 'miter' : 'round',
-    lineCap: isSquareBrushType ? 'butt' : 'round',
+    lineJoin: isSquareBrushType ? 'bevel' : 'round',
+    lineCap: isSquareBrushType ? 'square' : 'round',
     tension: isSquareBrushType ? 0 : toolConfig.tension || 1,
     bezier: isSquareBrushType ? false : toolConfig.bezier || true,
     id: randomId(TOOLS_IDS.OBJECT_REMOVAL),

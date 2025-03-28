@@ -116,7 +116,7 @@ export default {
   px: 'px',
   invalidTextContent: 'Invalid text content',
   baselineShift: 'Baseline shift',
-  aiTab: 'AI',
+  aiTab: 'AI tools',
   objectRemovalTool: 'Object removal',
   objectRemovalBrushSize: 'Brush size',
   objectRemovalApplyButton: 'Apply',

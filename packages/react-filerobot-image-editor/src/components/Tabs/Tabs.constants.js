@@ -48,6 +48,7 @@ export const AVAILABLE_TABS = [
   {
     id: TABS_IDS.AI,
     icon: AiToolsOutline,
+    labelKey: 'aiTab',
     hideFn: ({ useAiTab, useCloudimage }) => !useAiTab || useCloudimage,
   },
 ];
