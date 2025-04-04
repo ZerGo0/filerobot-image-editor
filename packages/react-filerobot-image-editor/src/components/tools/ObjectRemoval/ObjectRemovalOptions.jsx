@@ -174,6 +174,11 @@ const ObjectRemovalOptions = ({
 
   const changeBrushSize = (value) => {
     const newValue = +value;
+    if (newValue === 0) {
+      setBrushSize('');
+      return;
+    }
+
     if (Number.isNaN(newValue) || newValue > maxSize) {
       return;
     }
