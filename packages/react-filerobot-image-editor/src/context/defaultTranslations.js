@@ -118,7 +118,7 @@ export default {
   baselineShift: 'Baseline shift',
   aiTab: 'AI tools',
   objectRemovalTool: 'Object removal',
-  objectRemovalBrushSize: 'Brush size',
+  objectRemovalBrushSize: 'Brush size (px)',
   objectRemovalApplyButton: 'Apply',
   objectRemovalBrushMode: 'Brush mode',
   objectRemovalBrushCircleType: 'Circle brush',

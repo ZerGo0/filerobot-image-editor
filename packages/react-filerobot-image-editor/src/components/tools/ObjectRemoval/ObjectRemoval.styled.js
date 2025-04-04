@@ -4,9 +4,11 @@ import Label from '@scaleflex/ui/core/label';
 import { IconButton, MenuItemIcon } from '@scaleflex/ui/core';
 import { Color as PC } from '@scaleflex/ui/utils/types/palette';
 import { ArrowBottom } from '@scaleflex/icons';
+import { FontVariant as FV } from '@scaleflex/ui/utils/types/typography';
 
 const StyledRemoveOptionLabel = styled(Label)`
   margin-bottom: 8px;
+  ${({ theme: { typography } }) => typography.font[FV.LabelExtraSmallUp]};
 `;
 
 const StyledBrushSizeWrapper = styled.div`
@@ -52,7 +54,7 @@ const StyledBrushCursor = styled.div.attrs(
 const StyledRemoveObjectOptionsWrapper = styled.div`
   display: flex;
   align-items: flex-end;
-  gap: 8px;
+  gap: 16px;
 
   @media (max-width: 480px) {
     flex-wrap: wrap;
