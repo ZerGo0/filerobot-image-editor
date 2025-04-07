@@ -19,6 +19,7 @@ import isFunction from 'utils/isFunction';
 import { HIDE_LOADER, SHOW_LOADER } from 'actions';
 import getElementOffsetPosition from 'utils/getElementOffsetPosition';
 import constructMaskImage from 'utils/constructMaskImage';
+import getFileFullName from 'utils/getFileFullName';
 import {
   StyledBrushCursor,
   StyledRemoveObjectOptionsWrapper,
@@ -79,8 +80,15 @@ const ObjectRemovalOptions = ({
     shownImageDimensions: { originalSourceInitialScale } = {},
     originalSource,
   } = store;
-  const { onSubmitDraw: onSubmitDrawConfig, ...toolConfig } =
-    config[TOOLS_IDS.OBJECT_REMOVAL] || {};
+
+  const {
+    defaultSavedImageName,
+    [TOOLS_IDS.OBJECT_REMOVAL]: {
+      onSubmitDraw: onSubmitDrawConfig,
+      ...toolConfig
+    } = {},
+  } = config || {};
+
   const [isHighlightMode, setIsHighlightMode] = useState(true);
   const [objectPathsAttrs, setObjectPathsAttrs] = useState([]);
   const [brushSize, setBrushSize] = useState(toolConfig.strokeWidth || minSize);
@@ -200,11 +208,21 @@ const ObjectRemovalOptions = ({
     if (objectPathsAttrs.length > 0) {
       const hasSubmitCallback = isFunction(onSubmitCbk);
       const abortController = new AbortController();
+      const { name } = getFileFullName(
+        defaultSavedImageName || originalSource.name,
+      );
       dispatch({
         type: SHOW_LOADER,
         payload: {
           text: t('objectRemovalApplyingText'),
-          cancelFn: hasSubmitCallback ? () => abortController.abort() : null,
+          cancelFn: hasSubmitCallback
+            ? () => abortController.abort('ui-cancelled')
+            : null,
+          useCancelConfirmationModal: true,
+          confirmationTitle: t('objectRemovalCancelConfirmationTitle'),
+          confirmationHint: `${t('objectRemovalCancelConfirmationHint')} ${
+            name ? `“${name}”` : t('theKeyword')
+          } ${t('objectRemovalCancelConfirmationHintCompletion')}`,
         },
       });
 
@@ -221,7 +239,7 @@ const ObjectRemovalOptions = ({
             objectPathsAttrs,
             originalSource,
             cancellationSignal: abortController.signal,
-            cancelFn: abortController.abort,
+            cancelFn: (reason = undefined) => abortController.abort(reason),
             // cbkFunctionName => toBlob, toImage, toDataURL, toCanvas
             getMaskedImage: (cbkFunctionName = 'toBlob') =>
               constructMaskImage(
@@ -262,7 +280,7 @@ const ObjectRemovalOptions = ({
     }
 
     return (
-      <StyledRemoveObjectOptionsWrapper data-testid="FIE_object-removal-brush-mode-toggle">
+      <StyledRemoveObjectOptionsWrapper data-testid="FIE-object-removal-brush-mode-toggle">
         <ObjectRemovalBrushMode
           isHighlightMode={isHighlightMode}
           setIsHighlightMode={setIsHighlightMode}
@@ -283,7 +301,7 @@ const ObjectRemovalOptions = ({
         <Button
           onClick={applyRemoval}
           size="sm"
-          data-testid="FIE_object-removal-tool-apply-button"
+          data-testid="FIE-object-removal-tool-apply-button"
           startIcon={<Shine />}
           color="secondary"
         >
@@ -308,7 +326,7 @@ const ObjectRemovalOptions = ({
             $isSquareBrushType={isSquareBrushType}
             $isHighlightMode={isHighlightMode}
             ref={objectPathCursorRef}
-            data-testid="FIE_object-removal-tool-brush-cursor"
+            data-testid="FIE-object-removal-tool-brush-cursor"
           />,
           canvasContainer,
         )}

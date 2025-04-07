@@ -317,8 +317,12 @@ const config = {
   // [TOOLS.OBJECT_REMOVAL]: {
   //   stroke: '#000000',
   //   strokeWidth: 100,
-  //   onSubmitDraw: async ({ attrs, updateOriginalSourceFns, getMaskedImage }) => {
-  //     return new Promise((resolve) => {
+  //   onSubmitDraw: async ({ attrs, cancellationSignal, updateOriginalSourceFns, getMaskedImage }) => {
+  //     return new Promise((resolve, reject) => {
+  //       cancellationSignal.addEventListener('abort', () => {
+  //         reject()
+  //       })
+
   //       getMaskedImage('toImage').then((img) => {
   //         document.body.appendChild(img)
   //       })

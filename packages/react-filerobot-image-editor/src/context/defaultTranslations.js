@@ -126,4 +126,9 @@ export default {
   objectRemovalApplyingText: 'Removing the selected area',
   objectRemovalMarkModeTooltip: 'Mark mode',
   objectRemovalUnMarkModeTooltip: 'Unmark mode',
+  objectRemovalCancelConfirmationTitle: 'Cancel process',
+  objectRemovalCancelConfirmationHint:
+    'Are you sure you want to cancel removing object from',
+  objectRemovalCancelConfirmationHintCompletion: 'asset?',
+  theKeyword: 'the',
 };

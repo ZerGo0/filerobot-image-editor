@@ -6,6 +6,9 @@ const showLoader = (state, payload = {}) => ({
     isLoadingGlobally: true,
     text: payload.text,
     cancelFn: payload.cancelFn,
+    useCancelConfirmationModal: payload.useCancelConfirmationModal,
+    confirmationTitle: payload.confirmationTitle,
+    confirmationHint: payload.confirmationHint,
   },
 });
 

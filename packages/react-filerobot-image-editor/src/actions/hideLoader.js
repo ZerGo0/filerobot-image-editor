@@ -6,6 +6,9 @@ const hideLoader = (state) => ({
     isLoadingGlobally: false,
     text: '',
     cancelFn: null,
+    useCancelConfirmationModal: false,
+    confirmationTitle: '',
+    confirmationHint: '',
   },
 });
 

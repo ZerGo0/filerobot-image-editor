@@ -11,9 +11,17 @@ import {
   StyledSpinner,
   StyledSpinnerCancelButton,
 } from './Spinner.styled';
+import { ConfirmationModal } from '../ConfirmationModals';
 
 const Spinner = ({ loadingData, theme, t }) => {
-  const { isLoadingGlobally, text, cancelFn } = loadingData;
+  const {
+    isLoadingGlobally,
+    text,
+    cancelFn,
+    useCancelConfirmationModal,
+    confirmationTitle,
+    confirmationHint,
+  } = loadingData;
   if (!isLoadingGlobally) {
     return null;
   }
@@ -29,11 +37,30 @@ const Spinner = ({ loadingData, theme, t }) => {
         color={theme.palette[PC.AccentStateless]}
       />
       {text && <Label size="lg">{text}</Label>}
-      {isFunction(cancelFn) && (
-        <StyledSpinnerCancelButton onClick={cancelFn} size="md">
-          {t('cancel')}
-        </StyledSpinnerCancelButton>
-      )}
+      {isFunction(cancelFn) &&
+        (useCancelConfirmationModal ? (
+          <ConfirmationModal
+            title={confirmationTitle}
+            hint={confirmationHint}
+            onConfirm={cancelFn}
+          >
+            <StyledSpinnerCancelButton
+              onClick={cancelFn}
+              size="md"
+              data-testid="FIE-spinner-cancel-button"
+            >
+              {t('cancel')}
+            </StyledSpinnerCancelButton>
+          </ConfirmationModal>
+        ) : (
+          <StyledSpinnerCancelButton
+            onClick={cancelFn}
+            size="md"
+            data-testid="FIE-spinner-cancel-button"
+          >
+            {t('cancel')}
+          </StyledSpinnerCancelButton>
+        ))}
     </StyledSpinnerWrapper>
   );
 };

@@ -15,39 +15,39 @@ export const updateTranslations = (newTranslations = {}, language = 'en') =>
     newTranslations,
   );
 
-const sendMissingTranslationsToBackend = (missingTranslations = []) =>
-  new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve(xhr.response);
-      } else {
-        console.warn(
-          `Error in sending translation key to backend ${xhr.response?.hint}, ${xhr.status}`,
-        );
-        reject();
-      }
-    };
+// const sendMissingTranslationsToBackend = (missingTranslations = []) =>
+//   new Promise((resolve, reject) => {
+//     const xhr = new XMLHttpRequest();
+//     xhr.responseType = 'json';
+//     xhr.onload = () => {
+//       if (xhr.status >= 200 && xhr.status < 300) {
+//         resolve(xhr.response);
+//       } else {
+//         console.warn(
+//           `Error in sending translation key to backend ${xhr.response?.hint}, ${xhr.status}`,
+//         );
+//         reject();
+//       }
+//     };
 
-    xhr.onerror = () => {
-      console.warn(
-        `Error in sending translation key to backend ${xhr.response?.hint}, ${xhr.status}`,
-      );
-      reject();
-    };
+//     xhr.onerror = () => {
+//       console.warn(
+//         `Error in sending translation key to backend ${xhr.response?.hint}, ${xhr.status}`,
+//       );
+//       reject();
+//     };
 
-    const payload = {
-      grid_uuid: TRANSLATIONS_GRID_UUID,
-      translations_requests: missingTranslations,
-    };
+//     const payload = {
+//       grid_uuid: TRANSLATIONS_GRID_UUID,
+//       translations_requests: missingTranslations,
+//     };
 
-    xhr.open(
-      'POST',
-      `https://neo.wordplex.io/api/import/request-translations?grid_uuid=${TRANSLATIONS_GRID_UUID}`,
-    );
-    xhr.send(JSON.stringify(payload));
-  });
+//     xhr.open(
+//       'POST',
+//       `https://neo.wordplex.io/api/import/request-translations?grid_uuid=${TRANSLATIONS_GRID_UUID}`,
+//     );
+//     xhr.send(JSON.stringify(payload));
+//   });
 
 export const getBackendTranslations = (
   additionalTranslations,
@@ -77,9 +77,9 @@ export const getBackendTranslations = (
           }
         });
 
-        if (missingTranslations.length > 0) {
-          sendMissingTranslationsToBackend(missingTranslations);
-        }
+        // if (missingTranslations.length > 0) {
+        //   sendMissingTranslationsToBackend(missingTranslations);
+        // }
 
         updateTranslations(additionalTranslations, loweredCaseLanguage);
         resolve(activatedTranslations);
