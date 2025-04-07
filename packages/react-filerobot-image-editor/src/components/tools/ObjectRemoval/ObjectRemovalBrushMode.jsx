@@ -21,7 +21,7 @@ const ObjectRemovalBrushMode = ({ t, isHighlightMode, setIsHighlightMode }) => (
         <StyledIconButton
           onClick={() => setIsHighlightMode(true)}
           size="sm"
-          data-testid="FIE_object-removal-tool-brush-mode-toggle"
+          data-testid="FIE-object-removal-tool-brush-mode-toggle"
           active={isHighlightMode}
           color="base"
         >
@@ -32,7 +32,7 @@ const ObjectRemovalBrushMode = ({ t, isHighlightMode, setIsHighlightMode }) => (
         <StyledIconButton
           onClick={() => setIsHighlightMode(false)}
           size="sm"
-          data-testid="FIE_object-removal-tool-brush-mode-toggle"
+          data-testid="FIE-object-removal-tool-brush-mode-toggle"
           active={!isHighlightMode}
           color="base"
         >

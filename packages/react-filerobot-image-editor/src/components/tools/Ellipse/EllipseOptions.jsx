@@ -15,7 +15,7 @@ const EllipseOptions = ({ t }) => {
   return (
     <AnnotationOptions
       className="FIE_ellipse-tool-options"
-      data-testid="FIE_ellipse-tool-options"
+      data-testid="FIE-ellipse-tool-options"
       annotation={ellipse}
       updateAnnotation={saveEllipse}
       t={t}

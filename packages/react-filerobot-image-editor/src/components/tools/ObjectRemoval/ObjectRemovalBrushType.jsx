@@ -32,7 +32,7 @@ const ObjectRemovalBrushType = ({
       <StyledIconButton
         onClick={toggleSquareBrushType}
         size="sm"
-        data-testid="FIE_object-removal-tool-brush-square-type-toggle"
+        data-testid="FIE-object-removal-tool-brush-square-type-toggle"
         color="base"
         $width="32px"
         $height="32px"
@@ -46,7 +46,7 @@ const ObjectRemovalBrushType = ({
           )
         }
         size="sm"
-        data-testid="FIE_object-removal-tool-brush-square-type-menu-trigger"
+        data-testid="FIE-object-removal-tool-brush-square-type-menu-trigger"
         active={Boolean(brushTypeMenuAnchorEl)}
         color="base"
         $width="16px"
@@ -59,7 +59,7 @@ const ObjectRemovalBrushType = ({
         anchorEl={brushTypeMenuAnchorEl}
         position="top"
         open={Boolean(brushTypeMenuAnchorEl)}
-        data-testid="FIE_object-removal-tool-brush-square-type-menu"
+        data-testid="FIE-object-removal-tool-brush-square-type-menu"
       >
         <MenuItem
           onClick={() => setIsSquareBrushType(false)}

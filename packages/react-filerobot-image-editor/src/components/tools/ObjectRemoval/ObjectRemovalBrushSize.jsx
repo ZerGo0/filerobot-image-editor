@@ -17,13 +17,13 @@ const ObjectRemovalBrushSize = ({
   changeBrushSize,
 }) => {
   return (
-    <StyledBrushSizeWrapper data-testid="FIE_object-removal-tool-brush-size-option">
+    <StyledBrushSizeWrapper data-testid="FIE-object-removal-tool-brush-size-option">
       <StyledRemoveOptionLabel size="sm">
         {t('objectRemovalBrushSize')}
       </StyledRemoveOptionLabel>
       <StyledSliderWrapper>
         <Slider
-          data-testid="FIE_object-removal-tool-brush-size-slider"
+          data-testid="FIE-object-removal-tool-brush-size-slider"
           annotation="px"
           min={minSize}
           max={maxSize}
@@ -33,7 +33,7 @@ const ObjectRemovalBrushSize = ({
           noMargin
         />
         <StyledSliderInput
-          data-testid="FIE_object-removal-tool-brush-size-input"
+          data-testid="FIE-object-removal-tool-brush-size-input"
           value={brushSize}
           onChange={({ target: { value } }) => changeBrushSize(value)}
         />
