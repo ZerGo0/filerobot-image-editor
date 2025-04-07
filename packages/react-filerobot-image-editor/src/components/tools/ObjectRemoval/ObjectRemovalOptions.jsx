@@ -93,6 +93,7 @@ const ObjectRemovalOptions = ({
   const [objectPathsAttrs, setObjectPathsAttrs] = useState([]);
   const [brushSize, setBrushSize] = useState(toolConfig.strokeWidth || minSize);
   const [isSquareBrushType, setIsSquareBrushType] = useState(false);
+  const isEnabled = objectPathsAttrs.length > 0;
 
   const updateOriginalSourceFns = useSetOriginalSource({
     resetOnSourceChange: false,
@@ -205,7 +206,7 @@ const ObjectRemovalOptions = ({
   };
 
   const applyRemoval = () => {
-    if (objectPathsAttrs.length > 0) {
+    if (isEnabled) {
       const hasSubmitCallback = isFunction(onSubmitCbk);
       const abortController = new AbortController();
       const { name } = getFileFullName(
@@ -303,6 +304,7 @@ const ObjectRemovalOptions = ({
           size="sm"
           data-testid="FIE-object-removal-tool-apply-button"
           startIcon={<Shine />}
+          disabled={!isEnabled}
           color="secondary"
         >
           {t('objectRemovalApplyButton')}
