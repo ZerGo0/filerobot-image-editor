@@ -17,7 +17,7 @@ const ObjectRemovalBrushMode = ({ t, isHighlightMode, setIsHighlightMode }) => (
       {t('objectRemovalBrushMode')}
     </StyledRemoveOptionLabel>
     <StyledButtonsWrapper>
-      <TooltipV2 title={t('objectRemovalMarkModeTooltip')}>
+      <TooltipV2 title={t('objectRemovalMarkModeTooltip')} size="md">
         <StyledIconButton
           onClick={() => setIsHighlightMode(true)}
           size="sm"
@@ -28,7 +28,7 @@ const ObjectRemovalBrushMode = ({ t, isHighlightMode, setIsHighlightMode }) => (
           <BrushOutline size={20} />
         </StyledIconButton>
       </TooltipV2>
-      <TooltipV2 title={t('objectRemovalUnMarkModeTooltip')}>
+      <TooltipV2 title={t('objectRemovalUnMarkModeTooltip')} size="md">
         <StyledIconButton
           onClick={() => setIsHighlightMode(false)}
           size="sm"

@@ -2,18 +2,14 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Circle, Square, Tick } from '@scaleflex/icons';
-import {
-  Menu,
-  MenuItem,
-  MenuItemIcon,
-  MenuItemLabel,
-} from '@scaleflex/ui/core';
+import { MenuItem, MenuItemIcon, MenuItemLabel } from '@scaleflex/ui/core';
 
 /** Internal Dependencies */
 import {
   StyledActiveMenuItem,
   StyledIconButton,
   StyledMenuArrow,
+  StyledMenuPopup,
 } from './ObjectRemoval.styled';
 
 const ObjectRemovalBrushType = ({
@@ -34,8 +30,7 @@ const ObjectRemovalBrushType = ({
         size="sm"
         data-testid="FIE-object-removal-tool-brush-square-type-toggle"
         color="base"
-        $width="32px"
-        $height="32px"
+        $margin="0 2px 0 24px"
       >
         {isSquareBrushType ? <Square size={20} /> : <Circle size={20} />}
       </StyledIconButton>
@@ -51,10 +46,11 @@ const ObjectRemovalBrushType = ({
         color="base"
         $width="16px"
         $height="100%"
+        $margin="0 16px 0 0"
       >
         <StyledMenuArrow size={12} $rotate={brushTypeMenuAnchorEl ? 180 : 0} />
       </StyledIconButton>
-      <Menu
+      <StyledMenuPopup
         onClose={() => setBrushTypeMenuAnchorEl(null)}
         anchorEl={brushTypeMenuAnchorEl}
         position="top"
@@ -66,7 +62,7 @@ const ObjectRemovalBrushType = ({
           active={!isSquareBrushType}
         >
           <MenuItemIcon>
-            <Circle size={12} />
+            <Circle size={14} />
           </MenuItemIcon>
           <MenuItemLabel>{t('objectRemovalBrushCircleType')}</MenuItemLabel>
           {!isSquareBrushType && (
@@ -80,7 +76,7 @@ const ObjectRemovalBrushType = ({
           active={isSquareBrushType}
         >
           <MenuItemIcon>
-            <Square size={12} />
+            <Square size={14} />
           </MenuItemIcon>
           <MenuItemLabel>{t('objectRemovalBrushSquareType')}</MenuItemLabel>
           {isSquareBrushType && (
@@ -89,7 +85,7 @@ const ObjectRemovalBrushType = ({
             </StyledActiveMenuItem>
           )}
         </MenuItem>
-      </Menu>
+      </StyledMenuPopup>
     </>
   );
 };

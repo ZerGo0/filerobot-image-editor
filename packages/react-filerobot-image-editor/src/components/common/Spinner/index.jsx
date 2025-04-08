@@ -21,7 +21,7 @@ const Spinner = ({ loadingData, theme, t }) => {
     useCancelConfirmationModal,
     confirmationTitle,
     confirmationHint,
-  } = loadingData;
+  } = loadingData || {};
   if (!isLoadingGlobally) {
     return null;
   }

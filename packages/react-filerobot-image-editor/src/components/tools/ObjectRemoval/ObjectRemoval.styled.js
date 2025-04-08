@@ -1,7 +1,7 @@
 /** External Dependencies */
 import styled from 'styled-components';
 import Label from '@scaleflex/ui/core/label';
-import { IconButton, MenuItemIcon } from '@scaleflex/ui/core';
+import { Button, IconButton, Menu, MenuItemIcon } from '@scaleflex/ui/core';
 import { Color as PC } from '@scaleflex/ui/utils/types/palette';
 import { ArrowBottom } from '@scaleflex/icons';
 import { FontVariant as FV } from '@scaleflex/ui/utils/types/typography';
@@ -14,11 +14,13 @@ const StyledRemoveOptionLabel = styled(Label)`
 const StyledBrushSizeWrapper = styled.div`
   max-width: 330px;
   min-width: 200px;
+  margin-right: 16px;
 
   @media (max-width: 480px) {
     max-width: 100%;
     width: 100%;
     order: 1;
+    margin-right: 0;
   }
 `;
 
@@ -54,7 +56,6 @@ const StyledBrushCursor = styled.div.attrs(
 const StyledRemoveObjectOptionsWrapper = styled.div`
   display: flex;
   align-items: flex-end;
-  gap: 16px;
 
   @media (max-width: 480px) {
     flex-wrap: wrap;
@@ -72,8 +73,9 @@ const StyledButtonsWrapper = styled.div`
 `;
 
 const StyledIconButton = styled(IconButton)`
-  width: ${({ $width }) => $width || '24px'};
-  height: ${({ $height }) => $height || '24px'};
+  width: ${({ $width }) => $width || '32px'};
+  height: ${({ $height }) => $height || '32px'};
+  ${({ $margin }) => $margin && `margin: ${$margin}`};
 
   svg {
     flex-shrink: 0;
@@ -82,7 +84,15 @@ const StyledIconButton = styled(IconButton)`
   }
 `;
 
+const StyledMenuPopup = styled(Menu)`
+  .SfxMenuItem-root {
+    align-items: flex-start;
+  }
+`;
+
 const StyledActiveMenuItem = styled(MenuItemIcon)`
+  margin-right: 0;
+
   svg {
     color: ${({ theme: { palette } }) => palette[PC.AccentStateless]};
   }
@@ -91,6 +101,14 @@ const StyledActiveMenuItem = styled(MenuItemIcon)`
 const StyledMenuArrow = styled(ArrowBottom)`
   transform: rotate(${({ $rotate = 0 }) => $rotate}deg);
   transition: transform 0.1s ease-in-out;
+`;
+
+const StyledApplyButton = styled(Button)`
+  height: 32px;
+
+  .SfxButton-StartIcon {
+    margin-right: 6px;
+  }
 `;
 
 export {
@@ -102,5 +120,7 @@ export {
   StyledIconButton,
   StyledBrushModeWrapper,
   StyledActiveMenuItem,
+  StyledMenuPopup,
   StyledMenuArrow,
+  StyledApplyButton,
 };

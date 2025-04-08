@@ -41,10 +41,10 @@ const StyledSliderWrapper = styled.div`
 const StyledSliderInput = styled(Input)`
   display: inline-block;
   width: 40px;
-  height: 28px;
   padding: 6px 2px;
-  margin-left: 10px;
+  margin-left: 4px;
   border: none;
+  height: 32px;
 
   .SfxInput-Base {
     text-align: center;

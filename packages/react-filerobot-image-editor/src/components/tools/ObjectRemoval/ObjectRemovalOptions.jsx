@@ -3,7 +3,6 @@ import React, { useCallback, useRef, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import Konva from 'konva';
 import PropTypes from 'prop-types';
-import { Button } from '@scaleflex/ui/core';
 import { Shine } from '@scaleflex/icons';
 
 /** Internal Dependencies */
@@ -21,6 +20,7 @@ import getElementOffsetPosition from 'utils/getElementOffsetPosition';
 import constructMaskImage from 'utils/constructMaskImage';
 import getFileFullName from 'utils/getFileFullName';
 import {
+  StyledApplyButton,
   StyledBrushCursor,
   StyledRemoveObjectOptionsWrapper,
 } from './ObjectRemoval.styled';
@@ -299,7 +299,7 @@ const ObjectRemovalOptions = ({
           brushSize={brushSize}
           changeBrushSize={changeBrushSize}
         />
-        <Button
+        <StyledApplyButton
           onClick={applyRemoval}
           size="sm"
           data-testid="FIE-object-removal-tool-apply-button"
@@ -308,7 +308,7 @@ const ObjectRemovalOptions = ({
           color="secondary"
         >
           {t('objectRemovalApplyButton')}
-        </Button>
+        </StyledApplyButton>
       </StyledRemoveObjectOptionsWrapper>
     );
   };

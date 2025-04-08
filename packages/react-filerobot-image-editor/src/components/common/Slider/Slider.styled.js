@@ -24,6 +24,12 @@ const StyledSlider = styled(Slider)`
     height: 2px;
     background-color: ${({ theme: { palette } }) => palette[PC.BordersItem]};
   }
+
+  .SfxSlider-label {
+    padding: 6px 12px;
+    font-size: 12px;
+    line-height: 18px;
+  }
 `;
 
 export { StyledSlider };
