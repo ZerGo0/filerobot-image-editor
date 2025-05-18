@@ -50,6 +50,7 @@ const BlurAnnotationOptions = ({ t }) => {
       }
       t={t}
       overrideOptions={[]}
+      hideFillOption
     >
       <StyledSliderContainer className="FIE_blur-annotation-radius-wrapper">
         <StyledSliderLabel className="FIE_blur-annotation-radius-label">
