@@ -1,27 +1,27 @@
 /** External Dependencies */
-import React, { useCallback, useMemo, useState } from 'react';
-import PropTypes from 'prop-types';
-import { usePhoneScreen, useStore } from 'hooks';
-import { Label } from '@scaleflex/ui/core';
-import Menu from '@scaleflex/ui/core/menu';
-import Transparency from '@scaleflex/icons/transparency';
+import Position from '@scaleflex/icons/position';
 import Shadow from '@scaleflex/icons/shadow';
 import Stroke from '@scaleflex/icons/stroke';
-import Position from '@scaleflex/icons/position';
+import Transparency from '@scaleflex/icons/transparency';
+import { Label } from '@scaleflex/ui/core';
+import Menu from '@scaleflex/ui/core/menu';
+import { usePhoneScreen, useStore } from 'hooks';
+import PropTypes from 'prop-types';
+import { useCallback, useMemo, useState } from 'react';
 
 /** Internal Dependencies */
-import OpacityField from './OpacityField';
-import StrokeFields from './StrokeFields';
-import ShadowFields from './ShadowFields';
-import PositionFields from './PositionFields';
+import ColorInput from '../ColorInput';
+import { POPPABLE_OPTIONS } from './AnnotationOptions.constants';
 import {
+  StyledIconWrapper,
   StyledOptionPopupContent,
   StyledOptions,
   StyledOptionsWrapper,
-  StyledIconWrapper,
 } from './AnnotationOptions.styled';
-import { POPPABLE_OPTIONS } from './AnnotationOptions.constants';
-import ColorInput from '../ColorInput';
+import OpacityField from './OpacityField';
+import PositionFields from './PositionFields';
+import ShadowFields from './ShadowFields';
+import StrokeFields from './StrokeFields';
 
 const AnnotationOptions = ({
   children,
@@ -33,6 +33,7 @@ const AnnotationOptions = ({
   hideFillOption,
   hidePositionField,
   className,
+  overrideOptions,
   ...rest
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -44,30 +45,40 @@ const AnnotationOptions = ({
 
   const isPhoneScreen = usePhoneScreen(320);
 
-  const options = useMemo(
-    () => [
-      ...morePoppableOptionsPrepended,
-      {
-        titleKey: 'opacity',
-        name: POPPABLE_OPTIONS.OPACITY,
-        Icon: Transparency,
-      },
-      ...(!useCloudimage
-        ? [
-            { titleKey: 'stroke', name: POPPABLE_OPTIONS.STROKE, Icon: Stroke },
-            { titleKey: 'shadow', name: POPPABLE_OPTIONS.SHADOW, Icon: Shadow },
-          ]
-        : []),
-      !hidePositionField
-        ? {
-            titleKey: 'position',
-            name: POPPABLE_OPTIONS.POSITION,
-            Icon: Position,
-          }
-        : undefined,
-    ],
-    [morePoppableOptionsPrepended],
-  );
+  const options =
+    overrideOptions ||
+    useMemo(
+      () => [
+        ...morePoppableOptionsPrepended,
+        {
+          titleKey: 'opacity',
+          name: POPPABLE_OPTIONS.OPACITY,
+          Icon: Transparency,
+        },
+        ...(!useCloudimage
+          ? [
+              {
+                titleKey: 'stroke',
+                name: POPPABLE_OPTIONS.STROKE,
+                Icon: Stroke,
+              },
+              {
+                titleKey: 'shadow',
+                name: POPPABLE_OPTIONS.SHADOW,
+                Icon: Shadow,
+              },
+            ]
+          : []),
+        !hidePositionField
+          ? {
+              titleKey: 'position',
+              name: POPPABLE_OPTIONS.POSITION,
+              Icon: Position,
+            }
+          : undefined,
+      ],
+      [morePoppableOptionsPrepended],
+    );
 
   const optionsPopups = useMemo(
     () => ({
@@ -175,6 +186,7 @@ AnnotationOptions.defaultProps = {
   hideFillOption: false,
   hidePositionField: false,
   className: undefined,
+  overrideOptions: undefined,
 };
 
 AnnotationOptions.propTypes = {
@@ -187,6 +199,7 @@ AnnotationOptions.propTypes = {
   moreOptionsPopupComponentsObj: PropTypes.instanceOf(Object),
   hidePositionField: PropTypes.bool,
   className: PropTypes.string,
+  overrideOptions: PropTypes.arrayOf(PropTypes.instanceOf(Object)),
 };
 
 export default AnnotationOptions;
