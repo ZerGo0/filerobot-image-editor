@@ -33,6 +33,10 @@ const useAnnotation = (annotation = {}, enablePreview = true) => {
 
   const saveAnnotation = useCallback((annotationData) => {
     const { fonts, onFontChange, ...savableAnnotationData } = annotationData;
+    // Ensure name is always included for blur annotations
+    if (annotation.name === TOOLS_IDS.BLUR_ANNOTATION && !savableAnnotationData.name) {
+      savableAnnotationData.name = TOOLS_IDS.BLUR_ANNOTATION;
+    }
     dispatch({
       type: SET_ANNOTATION,
       payload: savableAnnotationData,
@@ -102,15 +106,22 @@ const useAnnotation = (annotation = {}, enablePreview = true) => {
         newAnnotationData.name || annotation.name,
       );
 
-      return {
+      const mergedData = {
         ...initialProps,
         ...newAnnotationData,
         id:
           newAnnotationData.id ||
-          randomId(newAnnotationData.name || latest.name),
+          randomId(newAnnotationData.name || latest.name || annotation.name),
         shouldSave: true,
         neverSave: false,
       };
+      
+      // Ensure name is always present
+      if (!mergedData.name) {
+        mergedData.name = annotation.name;
+      }
+      
+      return mergedData;
     });
   }, []);
 

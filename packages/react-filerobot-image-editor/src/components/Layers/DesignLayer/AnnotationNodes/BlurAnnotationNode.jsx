@@ -1,8 +1,8 @@
 /** External Dependencies */
-import React, { useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import Konva from 'konva';
-import { Group, Rect, Image, Text } from 'react-konva';
+import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from 'react';
+import { Group, Image } from 'react-konva';
 
 /** Internal Dependencies */
 import { useStore } from 'hooks';
@@ -29,16 +29,17 @@ const BlurAnnotationNode = ({
   shadowBlur = 0,
   shadowColor = '#000000',
   shadowOpacity = 1,
+  draggable = false,
   ...otherProps
 }) => {
   const [blurredPreview, setBlurredPreview] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const groupRef = useRef();
   const imageRef = useRef();
-  const { 
-    originalImage, 
+  const {
+    originalImage,
     shownImageDimensions,
-    adjustments: { isFlippedX, isFlippedY } = {}
+    adjustments: { isFlippedX, isFlippedY } = {},
   } = useStore();
 
   // Check if we're in save mode
@@ -51,23 +52,30 @@ const BlurAnnotationNode = ({
         setIsSaving(isCurrentlySaving);
       }
     };
-    
+
     checkSaveMode();
     const interval = setInterval(checkSaveMode, 100);
-    
+
     return () => clearInterval(interval);
   }, []);
 
   // Create blurred preview for editing mode
   useEffect(() => {
-    if (!originalImage || !shownImageDimensions || width <= 0 || height <= 0 || isSaving) return;
+    if (
+      !originalImage ||
+      !shownImageDimensions ||
+      width <= 0 ||
+      height <= 0 ||
+      isSaving
+    )
+      return;
 
     // First, create a flipped version of the image if needed
     const flippedCanvas = document.createElement('canvas');
     flippedCanvas.width = originalImage.width;
     flippedCanvas.height = originalImage.height;
     const flippedCtx = flippedCanvas.getContext('2d');
-    
+
     // Apply flip transformations
     flippedCtx.save();
     if (isFlippedX) {
@@ -78,7 +86,7 @@ const BlurAnnotationNode = ({
       flippedCtx.scale(1, -1);
       flippedCtx.translate(0, -originalImage.height);
     }
-    
+
     // Draw the flipped image
     flippedCtx.drawImage(originalImage, 0, 0);
     flippedCtx.restore();
@@ -98,7 +106,7 @@ const BlurAnnotationNode = ({
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext('2d');
-    
+
     // Extract region from the flipped canvas
     ctx.drawImage(
       flippedCanvas,
@@ -109,7 +117,7 @@ const BlurAnnotationNode = ({
       0, // Destination X
       0, // Destination Y
       width, // Destination Width
-      height // Destination Height
+      height, // Destination Height
     );
 
     // Create an off-screen Konva stage for blur processing
@@ -129,7 +137,7 @@ const BlurAnnotationNode = ({
 
     // Create Konva image from canvas
     const imageFromCanvas = new window.Image();
-    imageFromCanvas.onload = function() {
+    imageFromCanvas.onload = function () {
       const konvaImage = new Konva.Image({
         image: imageFromCanvas,
         x: 0,
@@ -164,7 +172,18 @@ const BlurAnnotationNode = ({
         document.body.removeChild(container);
       }
     };
-  }, [originalImage, shownImageDimensions, x, y, width, height, blurRadius, isFlippedX, isFlippedY, isSaving]);
+  }, [
+    originalImage,
+    shownImageDimensions,
+    x,
+    y,
+    width,
+    height,
+    blurRadius,
+    isFlippedX,
+    isFlippedY,
+    isSaving,
+  ]);
 
   // Apply cache and filters when saving
   useEffect(() => {
@@ -191,6 +210,63 @@ const BlurAnnotationNode = ({
   const scaleRatioX = originalImage.width / shownImageDimensions.width;
   const scaleRatioY = originalImage.height / shownImageDimensions.height;
 
+  // During editing mode, always use an Image element to prevent drag state issues
+  if (!isSaving) {
+    // If we have the blurred preview, use it
+    if (blurredPreview) {
+      return (
+        <Image
+          id={id}
+          name={name}
+          x={x}
+          y={y}
+          image={blurredPreview}
+          width={width}
+          height={height}
+          scaleX={scaleX}
+          scaleY={scaleY}
+          rotation={rotation}
+          opacity={opacity}
+          draggable={draggable}
+          {...annotationEvents}
+          {...otherProps}
+        />
+      );
+    }
+
+    // Create a placeholder image from canvas while blur is loading
+    const placeholderCanvas = document.createElement('canvas');
+    placeholderCanvas.width = Math.max(1, width);
+    placeholderCanvas.height = Math.max(1, height);
+    const ctx = placeholderCanvas.getContext('2d');
+    ctx.fillStyle = 'rgba(200, 200, 200, 0.3)';
+    ctx.fillRect(0, 0, placeholderCanvas.width, placeholderCanvas.height);
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.strokeRect(0, 0, placeholderCanvas.width, placeholderCanvas.height);
+
+    return (
+      <Image
+        id={id}
+        name={name}
+        x={x}
+        y={y}
+        image={placeholderCanvas}
+        width={width}
+        height={height}
+        scaleX={scaleX}
+        scaleY={scaleY}
+        rotation={rotation}
+        opacity={opacity}
+        draggable={draggable}
+        {...annotationEvents}
+        {...otherProps}
+      />
+    );
+  }
+
+  // During save, use the complex blur rendering
   return (
     <Group
       ref={groupRef}
@@ -198,98 +274,43 @@ const BlurAnnotationNode = ({
       name={name}
       x={x}
       y={y}
+      width={width}
+      height={height}
       scaleX={scaleX}
       scaleY={scaleY}
       rotation={rotation}
       opacity={opacity}
-      {...annotationEvents}
-      {...otherProps}
     >
-      {isSaving ? (
-        // During save, use clipped Konva image with blur filter
+      <Group
+        clip={{
+          x: 0,
+          y: 0,
+          width,
+          height,
+        }}
+      >
         <Group
-          clip={{
-            x: 0,
-            y: 0,
-            width,
-            height,
-          }}
+          x={width / 2}
+          y={height / 2}
+          offsetX={width / 2}
+          offsetY={height / 2}
+          scaleX={isFlippedX ? -1 : 1}
+          scaleY={isFlippedY ? -1 : 1}
         >
-          <Group
-            x={width / 2}
-            y={height / 2}
-            offsetX={width / 2}
-            offsetY={height / 2}
-            scaleX={isFlippedX ? -1 : 1}
-            scaleY={isFlippedY ? -1 : 1}
-          >
-            <Image
-              ref={imageRef}
-              image={originalImage}
-              x={-x * scaleRatioX}
-              y={-y * scaleRatioY}
-              width={originalImage.width}
-              height={originalImage.height}
-              scaleX={1 / scaleRatioX}
-              scaleY={1 / scaleRatioY}
-              filters={[Konva.Filters.Blur]}
-              blurRadius={blurRadius}
-            />
-          </Group>
-        </Group>
-      ) : (
-        // During editing, show the pre-blurred preview
-        <>
-          {blurredPreview ? (
-            <Image
-              image={blurredPreview}
-              width={width}
-              height={height}
-              listening={false}
-            />
-          ) : (
-            <Rect
-              width={width}
-              height={height}
-              fill="rgba(200, 200, 200, 0.3)"
-              stroke="rgba(0, 0, 0, 0.5)"
-              strokeWidth={2}
-              dash={[5, 5]}
-            />
-          )}
-          
-          {/* Border to show the blur region */}
-          <Rect
-            width={width}
-            height={height}
-            stroke="rgba(0, 0, 0, 0.3)"
-            strokeWidth={2}
-            dash={[5, 5]}
-            fill="transparent"
-            listening={false}
+          <Image
+            ref={imageRef}
+            image={originalImage}
+            x={-x * scaleRatioX}
+            y={-y * scaleRatioY}
+            width={originalImage.width}
+            height={originalImage.height}
+            scaleX={1 / scaleRatioX}
+            scaleY={1 / scaleRatioY}
+            filters={[Konva.Filters.Blur]}
+            blurRadius={blurRadius}
           />
-          
-          {/* Show blur level indicator */}
-          <Group>
-            <Rect
-              x={5}
-              y={5}
-              width={60}
-              height={20}
-              fill="rgba(0, 0, 0, 0.7)"
-              cornerRadius={3}
-            />
-            <Text
-              x={10}
-              y={8}
-              text={`Blur: ${blurRadius}`}
-              fontSize={12}
-              fill="white"
-              fontFamily="Arial"
-            />
-          </Group>
-        </>
-      )}
+        </Group>
+      </Group>
     </Group>
   );
 };
@@ -302,6 +323,7 @@ BlurAnnotationNode.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   blurRadius: PropTypes.number,
+  draggable: PropTypes.bool,
 };
 
 export default BlurAnnotationNode;

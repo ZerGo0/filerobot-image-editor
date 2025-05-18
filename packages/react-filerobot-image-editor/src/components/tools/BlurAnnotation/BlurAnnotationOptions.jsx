@@ -31,7 +31,10 @@ const BlurAnnotationOptions = ({ t }) => {
 
   const updateBlurRadius = (value) => {
     const sanitizedValue = restrictNumber(value, MIN_VALUE, MAX_VALUE);
-    saveBlurAnnotation({ blurRadius: sanitizedValue });
+    saveBlurAnnotation({ 
+      blurRadius: sanitizedValue,
+      name: TOOLS_IDS.BLUR_ANNOTATION
+    });
   };
 
   return (
@@ -40,7 +43,10 @@ const BlurAnnotationOptions = ({ t }) => {
       moreOptionsPopupComponentsObj={blurAnnotationOptionsPopupComponents}
       morePoppableOptionsPrepended={BLUR_ANNOTATION_POPPABLE_OPTIONS}
       annotation={blurAnnotation}
-      updateAnnotation={saveBlurAnnotation}
+      updateAnnotation={(updates) => saveBlurAnnotation({ 
+        ...updates, 
+        name: TOOLS_IDS.BLUR_ANNOTATION 
+      })}
       t={t}
     >
       <StyledSliderContainer className="FIE_blur-annotation-radius-wrapper">

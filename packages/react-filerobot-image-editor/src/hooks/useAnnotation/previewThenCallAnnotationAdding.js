@@ -127,6 +127,7 @@ const previewThenCallAnnotationAdding = (
       previewAnnotation({
         ...currentAnnotationProps,
         ...boundingRect,
+        name: annotation.name, // Ensure name is included
       });
     }
 
@@ -174,6 +175,9 @@ const previewThenCallAnnotationAdding = (
         savableAnnotation.width = width;
         savableAnnotation.height = height;
       }
+      // Ensure name is always included in savableAnnotation
+      savableAnnotation.name = annotation.name || savableAnnotation.name;
+      
       callbkAfterPreview(savableAnnotation, true);
     }
 
