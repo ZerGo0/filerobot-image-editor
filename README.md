@@ -73,6 +73,7 @@ The Filerobot Image Editor is the easiest way to integrate an easy-to-use image 
 - 🏗️ Easy, Focused & Simple UI for better UX.
 - ➕ Ability to customize.
 - 🔢 Multiple annotations selections & transformation
+- 🌫️ Region-specific blur annotations
 - 🚀 Image file on save customization.
 - 🧩 ES6 library supports tree-shaking for eliminating dead code.
 - 🤹🏼 And more to discover by yourself...
@@ -812,6 +813,27 @@ The available options for arrow annotation tool in additon to the annotationsCom
 | **`lineCap`**       | string | 'butt' ('butt' \| 'round' \| 'square') | The border line cap                 |
 | **`pointerLength`** | number | undefined                              | Length of the arrow's pointer in px |
 | **`pointerWidth`**  | number | undefined                              | Width of the arrow's pointer in px  |
+
+#### `BlurAnnotation`
+
+<u>Type:</u> `object`
+
+<u>Supported version:</u> +v4.10.0
+
+<u>Default:</u>
+
+```js
+{
+    ...annotationsCommon,
+    blurRadius: 10,
+}
+```
+
+The available options for blur annotation tool in addition to the annotationsCommon property,
+
+| Property         | Type   | Default (possible values) | Description                                    |
+| ---------------- | ------ | ------------------------- | ---------------------------------------------- |
+| **`blurRadius`** | number | 10 (0 - 100)             | The blur radius to apply to the selected region |
 
 #### `Watermark`
 

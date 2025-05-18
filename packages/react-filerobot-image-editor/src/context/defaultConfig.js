@@ -65,6 +65,9 @@ export default {
     pointerLength: undefined,
     pointerWidth: undefined,
   },
+  [TOOLS_IDS.BLUR_ANNOTATION]: {
+    blurRadius: 10,
+  },
   [TOOLS_IDS.WATERMARK]: {
     gallery: [],
     textScalingRatio: 0.5,

@@ -35,6 +35,7 @@ declare const TOOLS = {
   WATERMARK: 'Watermark',
   PEN: 'Pen',
   RESIZE: 'Resize',
+  BLUR_ANNOTATION: 'BlurAnnotation',
 } as const;
 
 // TABS_IDS
@@ -119,6 +120,10 @@ type arrowAnnotation = annotationsCommon & {
   pointerWidth?: number;
 };
 
+type blurAnnotation = annotationsCommon & {
+  blurRadius?: number;
+};
+
 type rotateAnnotation = {
   angle?: number;
   componentType?: 'slider' | 'buttons';
@@ -183,6 +188,7 @@ type imageDesignState = {
         | penAnnotation
         | lineAnnotation
         | arrowAnnotation
+        | blurAnnotation
       ) & {
         id: string;
         name: string;
@@ -266,6 +272,8 @@ export interface FilerobotImageEditorConfig {
   Line?: lineAnnotation;
   // [TOOLS_IDS.ARROW]: {
   Arrow?: arrowAnnotation;
+  // [TOOLS_IDS.BLUR_ANNOTATION]:
+  BlurAnnotation?: blurAnnotation;
   // [TOOLS_IDS.ROTATE]:
   Rotate?: rotateAnnotation;
   // [TOOLS_IDS.WATERMARK]

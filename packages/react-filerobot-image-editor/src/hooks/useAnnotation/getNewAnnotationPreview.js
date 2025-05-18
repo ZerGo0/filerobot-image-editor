@@ -12,6 +12,7 @@ const annotationsNamesToKonvaClasses = {
   [TOOLS_IDS.IMAGE]: Konva.Image,
   [TOOLS_IDS.TEXT]: Konva.Text,
   [TOOLS_IDS.ARROW]: Konva.Arrow,
+  [TOOLS_IDS.BLUR_ANNOTATION]: Konva.Rect, // Using Rect for preview
 };
 
 const ANNOTATIONS_WITH_POINTS = [TOOLS_IDS.LINE, TOOLS_IDS.ARROW];
@@ -22,8 +23,8 @@ export const NO_WIDTH_HEIGHT_ANNOTATIONS = [
   TOOLS_IDS.POLYGON,
 ];
 
-const getNewAnnotationPreview = (annotation) =>
-  new annotationsNamesToKonvaClasses[annotation.name]({
+const getNewAnnotationPreview = (annotation) => {
+  const previewConfig = {
     ...annotation,
     opacity: annotation.opacity ?? 0.7,
     x: annotation.x ?? 0,
@@ -33,7 +34,18 @@ const getNewAnnotationPreview = (annotation) =>
     ...(ANNOTATIONS_WITH_POINTS.includes(annotation.name)
       ? { stroke: annotation.stroke || '#000000' }
       : {}),
-  });
+  };
+
+  // For blur annotation, create a dashed rectangle preview
+  if (annotation.name === TOOLS_IDS.BLUR_ANNOTATION) {
+    previewConfig.stroke = 'rgba(0, 0, 0, 0.5)';
+    previewConfig.strokeWidth = 2;
+    previewConfig.dash = [5, 5];
+    previewConfig.fill = 'rgba(0, 0, 0, 0.1)';
+  }
+
+  return new annotationsNamesToKonvaClasses[annotation.name](previewConfig);
+};
 
 // If we are changing width/height we have to update the X/Y for avoiding moving the annotation from current place.
 export const dimensToProperAnnotationDimens = (
@@ -50,6 +62,7 @@ export const dimensToProperAnnotationDimens = (
 
   switch (annotationName) {
     case TOOLS_IDS.RECT:
+    case TOOLS_IDS.BLUR_ANNOTATION:
       if (isShiftKeyPressed) {
         newAnnotationDimens.width = Math.sqrt(
           absWidth * absWidth + absHeight * absHeight,

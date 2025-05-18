@@ -311,6 +311,9 @@ const config = {
     //   }
     // },
   },
+  [TOOLS.BLUR_ANNOTATION]: {
+    blurRadius: 10, // Default blur radius for region-specific blur annotations
+  },
   // onBeforeSave: (imageFileInfo) => {
   //   console.log('info', imageFileInfo);
   //   return false;

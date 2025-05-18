@@ -44,6 +44,7 @@ export default {
   cinemascope: 'Cinemascope',
   arrowTool: 'Arrow',
   blurTool: 'Blur',
+  blurRadius: 'Blur radius',
   brightnessTool: 'Brightness',
   contrastTool: 'Contrast',
   ellipseTool: 'Ellipse',
