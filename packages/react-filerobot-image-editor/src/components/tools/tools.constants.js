@@ -20,6 +20,7 @@ import { PolygonButton, PolygonOptions } from './Polygon';
 import { Resize } from './Resize';
 import { Watermark } from './Watermark';
 import { BlurAnnotationButton, BlurAnnotationOptions } from './BlurAnnotation';
+import { EmojiButton, EmojiOptions } from './Emoji';
 
 export const TOOLS_ITEMS = {
   [TOOLS_IDS.CROP]: {
@@ -123,6 +124,11 @@ export const TOOLS_ITEMS = {
     Item: BlurAnnotationButton,
     ItemOptions: BlurAnnotationOptions,
   },
+  [TOOLS_IDS.EMOJI]: {
+    id: TOOLS_IDS.EMOJI,
+    Item: EmojiButton,
+    ItemOptions: EmojiOptions,
+  },
 };
 
 export const TABS_TOOLS = {
@@ -144,6 +150,7 @@ export const TABS_TOOLS = {
   [TABS_IDS.ANNOTATE]: [
     TOOLS_IDS.TEXT,
     TOOLS_IDS.IMAGE,
+    TOOLS_IDS.EMOJI,
     TOOLS_IDS.RECT,
     TOOLS_IDS.ELLIPSE,
     TOOLS_IDS.POLYGON,

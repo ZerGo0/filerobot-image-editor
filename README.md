@@ -74,6 +74,7 @@ The Filerobot Image Editor is the easiest way to integrate an easy-to-use image 
 - ➕ Ability to customize.
 - 🔢 Multiple annotations selections & transformation
 - 🌫️ Region-specific blur annotations
+- 😊 Emoji annotations as resizable and draggable stickers
 - 🚀 Image file on save customization.
 - 🧩 ES6 library supports tree-shaking for eliminating dead code.
 - 🤹🏼 And more to discover by yourself...
@@ -834,6 +835,27 @@ The available options for blur annotation tool in addition to the annotationsCom
 | Property         | Type   | Default (possible values) | Description                                    |
 | ---------------- | ------ | ------------------------- | ---------------------------------------------- |
 | **`blurRadius`** | number | 10 (0 - 100)             | The blur radius to apply to the selected region |
+
+#### `Emoji`
+
+<u>Type:</u> `object`
+
+<u>Supported version:</u> +v4.14.0
+
+<u>Default:</u>
+
+```js
+{
+    ...annotationsCommon,
+    emojis: ['😃', '😎', '❤️', '👍', '👎', '🎉', '🔥', '💯', '🌟', '🚀', '😂', '😍', '🤔', '😭', '😊'],
+}
+```
+
+The available options for emoji annotation tool in addition to the annotationsCommon property,
+
+| Property     | Type     | Default (possible values) | Description                                    |
+| ------------ | -------- | ------------------------- | ---------------------------------------------- |
+| **`emojis`** | string[] | ['😃', '😎', '❤️', '👍', '👎', '🎉', '🔥', '💯', '🌟', '🚀', '😂', '😍', '🤔', '😭', '😊'] | The list of emojis available for the user to choose from |
 
 #### `Watermark`
 
