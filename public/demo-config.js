@@ -1,9 +1,8 @@
 /* eslint-disable */
 // THIS FILE IS NOT USED ANYWHERE, JUST FOR MENTIONING AN EXAMPLE OF CONFIG
-import DuplicateIcon from '@scaleflex/icons/duplicate';
-import Social from '@scaleflex/icons/social';
-import CropClassicTv from '@scaleflex/icons/crop-classic-tv';
 import CropCinemaScope from '@scaleflex/icons/crop-cinema-scope';
+import CropClassicTv from '@scaleflex/icons/crop-classic-tv';
+import Social from '@scaleflex/icons/social';
 
 import FilerobotImageEditor from 'filerobot-image-editor/src';
 import toPrecisedFloat from 'react-filerobot-image-editor/src/utils/toPrecisedFloat';
@@ -310,6 +309,33 @@ const config = {
     //     reRenderCanvasFn();
     //   }
     // },
+  },
+  [TOOLS.BLUR_ANNOTATION]: {
+    blurRadius: 10, // Default blur radius for region-specific blur annotations
+  },
+  [TOOLS.EMOJI]: {
+    emojis: [
+      '😃',
+      '😎',
+      '❤️',
+      '👍',
+      '👎',
+      '🎉',
+      '🔥',
+      '💯',
+      '🌟',
+      '🚀',
+      '😂',
+      '😍',
+      '🤔',
+      '😭',
+      '😊',
+      '👏',
+      '🙏',
+      '💪',
+      '🎈',
+      '🎯',
+    ],
   },
   // onBeforeSave: (imageFileInfo) => {
   //   console.log('info', imageFileInfo);

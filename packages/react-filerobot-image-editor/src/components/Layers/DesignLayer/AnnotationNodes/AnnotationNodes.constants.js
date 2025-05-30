@@ -7,6 +7,8 @@ import TextNode from './TextNode';
 import ImageNode from './ImageNode';
 import LineNode from './LineNode';
 import ArrowNode from './ArrowNode';
+import BlurAnnotationNode from './BlurAnnotationNode';
+import EmojiNode from './EmojiNode';
 
 export const ANNOTATION_NAMES_TO_COMPONENT = {
   [TOOLS_IDS.RECT]: RectNode,
@@ -17,4 +19,6 @@ export const ANNOTATION_NAMES_TO_COMPONENT = {
   [TOOLS_IDS.LINE]: LineNode,
   [TOOLS_IDS.ARROW]: ArrowNode,
   [TOOLS_IDS.PEN]: LineNode,
+  [TOOLS_IDS.BLUR_ANNOTATION]: BlurAnnotationNode,
+  [TOOLS_IDS.EMOJI]: EmojiNode,
 };

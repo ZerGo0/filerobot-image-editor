@@ -44,6 +44,8 @@ export const TOOLS_IDS = {
   WATERMARK: 'Watermark',
   PEN: 'Pen',
   RESIZE: 'Resize',
+  BLUR_ANNOTATION: 'BlurAnnotation',
+  EMOJI: 'Emoji',
 };
 
 export const FLIP_DIRECTIONS = {

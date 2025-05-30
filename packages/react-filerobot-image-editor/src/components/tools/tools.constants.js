@@ -19,6 +19,8 @@ import { ArrowButton, ArrowOptions } from './Arrow';
 import { PolygonButton, PolygonOptions } from './Polygon';
 import { Resize } from './Resize';
 import { Watermark } from './Watermark';
+import { BlurAnnotationButton, BlurAnnotationOptions } from './BlurAnnotation';
+import { EmojiButton, EmojiOptions } from './Emoji';
 
 export const TOOLS_ITEMS = {
   [TOOLS_IDS.CROP]: {
@@ -117,6 +119,16 @@ export const TOOLS_ITEMS = {
     id: TOOLS_IDS.RESIZE,
     Item: Resize,
   },
+  [TOOLS_IDS.BLUR_ANNOTATION]: {
+    id: TOOLS_IDS.BLUR_ANNOTATION,
+    Item: BlurAnnotationButton,
+    ItemOptions: BlurAnnotationOptions,
+  },
+  [TOOLS_IDS.EMOJI]: {
+    id: TOOLS_IDS.EMOJI,
+    Item: EmojiButton,
+    ItemOptions: EmojiOptions,
+  },
 };
 
 export const TABS_TOOLS = {
@@ -138,12 +150,14 @@ export const TABS_TOOLS = {
   [TABS_IDS.ANNOTATE]: [
     TOOLS_IDS.TEXT,
     TOOLS_IDS.IMAGE,
+    TOOLS_IDS.EMOJI,
     TOOLS_IDS.RECT,
     TOOLS_IDS.ELLIPSE,
     TOOLS_IDS.POLYGON,
     TOOLS_IDS.PEN,
     TOOLS_IDS.LINE,
     TOOLS_IDS.ARROW,
+    TOOLS_IDS.BLUR_ANNOTATION,
   ],
   [TABS_IDS.RESIZE]: [TOOLS_IDS.RESIZE],
 };

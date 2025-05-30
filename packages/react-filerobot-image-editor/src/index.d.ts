@@ -35,13 +35,15 @@ declare const TOOLS = {
   WATERMARK: 'Watermark',
   PEN: 'Pen',
   RESIZE: 'Resize',
+  BLUR_ANNOTATION: 'BlurAnnotation',
+  EMOJI: 'Emoji',
 } as const;
 
 // TABS_IDS
-type availableTabs = typeof TABS[keyof typeof TABS];
+type availableTabs = (typeof TABS)[keyof typeof TABS];
 
 // TOOLS_IDS
-type availableTools = typeof TOOLS[keyof typeof TOOLS];
+type availableTools = (typeof TOOLS)[keyof typeof TOOLS];
 
 type lineCap = 'butt' | 'round' | 'square';
 
@@ -119,6 +121,14 @@ type arrowAnnotation = annotationsCommon & {
   pointerWidth?: number;
 };
 
+type blurAnnotation = annotationsCommon & {
+  blurRadius?: number;
+};
+
+type emojiAnnotation = annotationsCommon & {
+  emojis?: string[];
+};
+
 type rotateAnnotation = {
   angle?: number;
   componentType?: 'slider' | 'buttons';
@@ -183,6 +193,8 @@ type imageDesignState = {
         | penAnnotation
         | lineAnnotation
         | arrowAnnotation
+        | blurAnnotation
+        | emojiAnnotation
       ) & {
         id: string;
         name: string;
@@ -197,6 +209,7 @@ type imageDesignState = {
         radiusY?: number; // Ellipse
         points?: number[]; // Pen/Line/Arrow
         image?: string | HTMLElement; // Image
+        emoji?: string; // Emoji
       };
   };
   resize?: {
@@ -266,14 +279,20 @@ export interface FilerobotImageEditorConfig {
   Line?: lineAnnotation;
   // [TOOLS_IDS.ARROW]: {
   Arrow?: arrowAnnotation;
+  // [TOOLS_IDS.BLUR_ANNOTATION]:
+  BlurAnnotation?: blurAnnotation;
+  // [TOOLS_IDS.EMOJI]:
+  Emoji?: emojiAnnotation;
   // [TOOLS_IDS.ROTATE]:
   Rotate?: rotateAnnotation;
   // [TOOLS_IDS.WATERMARK]
   Watermark?: {
-    gallery?: string[] | ({ url: string, previewUrl: string })[] | [];
-    onUploadWatermarkImgClick?: (loadAndSetWatermarkImg: (imgUrl, revokeObjectUrl) => void) => Promise<{ url: string, revokeObjectUrl?: boolean }> | void
-    textScalingRatio?: number,
-    imageScalingRatio?: number,
+    gallery?: string[] | { url: string; previewUrl: string }[] | [];
+    onUploadWatermarkImgClick?: (
+      loadAndSetWatermarkImg: (imgUrl, revokeObjectUrl) => void,
+    ) => Promise<{ url: string; revokeObjectUrl?: boolean }> | void;
+    textScalingRatio?: number;
+    imageScalingRatio?: number;
     hideTextWatermark?: boolean;
   };
   // [TOOLS_IDS.CROP]
@@ -288,7 +307,16 @@ export interface FilerobotImageEditorConfig {
     presetsItems?: cropPresetItem[];
     presetsFolders?: cropPresetFolder[];
     autoResize?: boolean;
-    lockCropAreaAt?: 'top-left' |  'top-center' | 'top-right' | 'center-left' | 'center-center' | 'center-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+    lockCropAreaAt?:
+      | 'top-left'
+      | 'top-center'
+      | 'top-right'
+      | 'center-left'
+      | 'center-center'
+      | 'center-right'
+      | 'bottom-left'
+      | 'bottom-center'
+      | 'bottom-right';
   };
   // TABS_IDS
   tabsIds?: availableTabs[] | [];
