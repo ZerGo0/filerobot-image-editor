@@ -6,7 +6,7 @@
         "modules": false
       }
     ],
-    "@babel/preset-react",
+    ["@babel/preset-react", { "runtime": "automatic" }],
     [
       "minify",
       {
@@ -23,8 +23,8 @@
           "./src"
         ],
         "alias": {
-          "react-filerobot-image-editor/src/": "react-filerobot-image-editor",
-          "react-filerobot-image-editor/src/utils/deepMerge": "react-filerobot-image-editor/lib/utils/deepMerge",
+          "@zergo0/react-filerobot-image-editor/src/": "@zergo0/react-filerobot-image-editor",
+          "@zergo0/react-filerobot-image-editor/src/utils/deepMerge": "@zergo0/react-filerobot-image-editor/lib/utils/deepMerge"
         }
       }
     ],

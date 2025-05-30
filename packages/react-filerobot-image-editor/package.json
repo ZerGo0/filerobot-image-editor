@@ -1,14 +1,14 @@
 {
-  "name": "react-filerobot-image-editor",
-  "version": "4.9.1",
+  "name": "@zergo0/react-filerobot-image-editor",
+  "version": "4.9.2",
   "license": "MIT",
-  "author": "Scaleflex",
-  "homepage": "https://github.com/scaleflex/filerobot-image-editor#readme",
+  "author": "zergo0",
+  "homepage": "https://github.com/ZerGo0/filerobot-image-editor#readme",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/scaleflex/filerobot-image-editor#readme"
+    "url": "https://github.com/ZerGo0/filerobot-image-editor#readme"
   },
   "keywords": [
     "Image editing react component",

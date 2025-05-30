@@ -1,18 +1,18 @@
 {
-  "name": "filerobot-image-editor-root",
+  "name": "@zergo0/filerobot-image-editor-root",
   "version": "4.0.0",
   "license": "MIT",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
-  "author": "Scaleflex",
-  "homepage": "https://github.com/scaleflex/filerobot-image-editor/#readme",
+  "author": "zergo0",
+  "homepage": "https://github.com/ZerGo0/filerobot-image-editor/#readme",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/scaleflex/filerobot-image-editor"
+    "url": "https://github.com/ZerGo0/filerobot-image-editor"
   },
   "keywords": [
     "image editor",
@@ -85,5 +85,6 @@
     "analyze:bundle": "source-map-explorer dist/filerobot-image-editor.min.js{,.map}",
     "release:beta": "yarn && yarn publish:packages --dist-tag beta && yarn publish:js-bundle beta",
     "release:prod": "yarn && yarn publish:packages && yarn publish:js-bundle latest && yarn release:gh-pages"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

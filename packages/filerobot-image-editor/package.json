@@ -1,14 +1,14 @@
 {
-  "name": "filerobot-image-editor",
-  "version": "4.8.1",
+  "name": "@zergo0/filerobot-image-editor",
+  "version": "4.8.3",
   "license": "MIT",
-  "author": "Scaleflex",
-  "homepage": "https://github.com/scaleflex/filerobot-image-editor#readme",
+  "author": "zergo0",
+  "homepage": "https://github.com/ZerGo0/filerobot-image-editor#readme",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/scaleflex/filerobot-image-editor#readme"
+    "url": "https://github.com/ZerGo0/filerobot-image-editor#readme"
   },
   "keywords": [
     "Image editing javascript library",
@@ -35,7 +35,7 @@
     "styled-components": "^5.3.5"
   },
   "peerDependencies": {
-    "react-filerobot-image-editor": "^4.7.0"
+    "@zergo0/react-filerobot-image-editor": "^4.9.0"
   },
   "scripts": {
     "build:lib": "rimraf lib && cross-env BABEL_ENV=production NODE_ENV=production babel src -d lib --config-file ../../babel.config.json -D"
