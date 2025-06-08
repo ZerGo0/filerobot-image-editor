@@ -29,6 +29,12 @@ const NodesTransformer = () => {
         : [],
     [selectionsIds],
   );
+  
+  // Check if any selected node is a blur annotation
+  const hasBlurAnnotation = useMemo(
+    () => selections.some((node) => node?.name() === TOOLS_IDS.BLUR_ANNOTATION),
+    [selections],
+  );
 
   const changePointerIconToMove = () => {
     dispatch({
@@ -82,13 +88,13 @@ const NodesTransformer = () => {
       borderStroke={theme.palette['accent-primary']}
       borderStrokeWidth={2}
       borderDash={[4]}
-      rotateEnabled={!useCloudimage}
+      rotateEnabled={!useCloudimage && !hasBlurAnnotation}
       onMouseOver={changePointerIconToMove}
       onMouseLeave={changePointerIconToDraw}
       onDblClick={enableTextContentChangeOnDblClick}
       onDblTap={enableTextContentChangeOnDblClick}
       enabledAnchors={enabledAnchors}
-      flipEnabled={!useCloudimage}
+      flipEnabled={!useCloudimage && !hasBlurAnnotation}
       shouldOverdrawWholeArea
     />
   );
