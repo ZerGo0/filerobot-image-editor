@@ -6,6 +6,7 @@ import { useRef, useState } from 'react';
 import { useAnnotation, useStore } from 'hooks';
 import { TOOLS_IDS } from 'utils/constants';
 import { getEmojiSvgUrl } from 'utils/emojiToSvg';
+import { SELECT_TOOL } from 'actions';
 import EmojiPicker from './EmojiPicker';
 
 const EmojiOptions = () => {
@@ -17,6 +18,7 @@ const EmojiOptions = () => {
     adjustments: { crop = {} },
     t,
     config = {},
+    dispatch,
   } = useStore();
 
   const [tmpAnnotation, updateAnnotation, addNewEmoji] = useAnnotation(
@@ -72,6 +74,17 @@ const EmojiOptions = () => {
         opacity: 1,
         isEmoji: true, // Custom property to identify emojis
       });
+
+      // Switch to IMAGE tool after adding the emoji to allow proper resizing
+      setTimeout(() => {
+        dispatch({
+          type: SELECT_TOOL,
+          payload: {
+            toolId: TOOLS_IDS.IMAGE,
+            keepSelections: true, // Keep the emoji selected
+          },
+        });
+      }, 100);
 
       setIsLoading(false);
       closeEmojiPicker();
