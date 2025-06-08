@@ -11,9 +11,6 @@ import {
   StyledEmojiGrid,
   StyledEmojiItem,
   StyledEmojiPickerContainer,
-  StyledNoResults,
-  StyledSearchContainer,
-  StyledSearchInput,
   StyledSkinToneButton,
   StyledSkinToneSelector,
   StyledTab,
@@ -25,7 +22,6 @@ import {
   getFrequentlyUsedEmojis,
   getSavedSkinTone,
   saveSkinTone,
-  searchEmojis,
   updateFrequentlyUsedEmoji,
 } from './emojiUtils';
 
@@ -33,7 +29,6 @@ const EmojiPicker = ({ anchorEl, onClose, onSelect, t }) => {
   const { theme } = useStore();
   const isOpen = Boolean(anchorEl);
   const [activeTab, setActiveTab] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
   const [frequentlyUsed, setFrequentlyUsed] = useState([]);
   const [selectedSkinTone, setSelectedSkinTone] = useState(() =>
     getSavedSkinTone(),
@@ -64,16 +59,10 @@ const EmojiPicker = ({ anchorEl, onClose, onSelect, t }) => {
 
       updateFrequentlyUsedEmoji(emoji);
       onSelect(emojiChar);
-      setSearchQuery('');
     },
     [onSelect, selectedSkinTone],
   );
 
-  // Search results
-  const searchResults = useMemo(() => {
-    if (!searchQuery) return null;
-    return searchEmojis(searchQuery);
-  }, [searchQuery]);
 
   // Tab categories including frequently used
   const categories = useMemo(() => {
@@ -143,7 +132,6 @@ const EmojiPicker = ({ anchorEl, onClose, onSelect, t }) => {
   // Reset state when closing
   useEffect(() => {
     if (!isOpen) {
-      setSearchQuery('');
       setActiveTab(0);
       setShowSkinToneSelector(false);
     }
@@ -204,19 +192,6 @@ const EmojiPicker = ({ anchorEl, onClose, onSelect, t }) => {
     );
   };
 
-  const renderSearchResults = () => {
-    if (!searchResults) return null;
-
-    if (searchResults.length === 0) {
-      return (
-        <StyledNoResults>
-          {t('noEmojisFound') || 'No emojis found'}
-        </StyledNoResults>
-      );
-    }
-
-    return <StyledEmojiGrid>{renderEmojiGrid(searchResults)}</StyledEmojiGrid>;
-  };
 
   // Get current category emojis
   const currentCategory = categories[activeTab];
@@ -233,7 +208,7 @@ const EmojiPicker = ({ anchorEl, onClose, onSelect, t }) => {
         style={{
           position: 'fixed',
           top: rect.bottom + 4,
-          left: rect.left - 200, // Adjust to show on the left side
+          right: window.innerWidth - rect.right, // Position from the right edge
           background: theme.palette['bg-secondary'],
           borderRadius: '4px',
           padding: '4px',
@@ -280,95 +255,72 @@ const EmojiPicker = ({ anchorEl, onClose, onSelect, t }) => {
       }}
     >
       <StyledEmojiPickerContainer>
-        <StyledSearchContainer>
-          <StyledSearchInput
-            type="text"
-            placeholder={t('searchEmoji') || 'Search emoji...'}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            autoFocus
-          />
-          <StyledSkinToneSelector className="FIE_skin-tone-selector">
-            <StyledSkinToneButton
-              ref={skinToneButtonRef}
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setShowSkinToneSelector(!showSkinToneSelector);
-              }}
-              title={t('selectSkinTone') || 'Select skin tone'}
-              $selected={selectedSkinTone !== 1}
-            >
-              {['✋', '✋🏻', '✋🏼', '✋🏽', '✋🏾', '✋🏿'][selectedSkinTone - 1]}
-            </StyledSkinToneButton>
-          </StyledSkinToneSelector>
-        </StyledSearchContainer>
-
-        {searchQuery ? (
-          <div
-            className="FIE_emoji-picker-panel"
-            style={{
-              height: '300px',
-              overflowY: 'auto',
-              position: 'relative',
-            }}
-          >
-            {renderSearchResults()}
-          </div>
-        ) : (
-          <>
-            <StyledTabsContainer>
-              <Tabs
-                value={activeTab}
-                onChange={(e, newValue) => setActiveTab(newValue)}
-                variant="scrollable"
-                scrollButtons={false}
-                style={{
-                  padding: '12px',
-                  scrollbarWidth: 'none',
-                  msOverflowStyle: 'none',
-                  '&::-webkit-scrollbar': {
-                    display: 'none',
-                  },
-                }}
-              >
-                {categories.map((category, index) => (
-                  <StyledTab
-                    key={category.key}
-                    label={category.icon}
-                    value={index}
-                    title={category.name}
-                    onClick={() => setActiveTab(index)}
-                  />
-                ))}
-              </Tabs>
-            </StyledTabsContainer>
-
-            <div
-              className="FIE_emoji-picker-panel"
+        <StyledTabsContainer>
+          <div style={{ display: 'flex', alignItems: 'center', padding: '12px', gap: '12px' }}>
+            <Tabs
+              value={activeTab}
+              onChange={(e, newValue) => setActiveTab(newValue)}
+              variant="scrollable"
+              scrollButtons={false}
               style={{
-                height: '300px',
-                overflowY: 'auto',
-                position: 'relative',
+                flex: 1,
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                '&::-webkit-scrollbar': {
+                  display: 'none',
+                },
               }}
             >
-              {currentCategory && (
-                <>
-                  <StyledCategoryTitle>
-                    {currentCategory.name}
-                  </StyledCategoryTitle>
-                  {currentCategory.emojis &&
-                    currentCategory.emojis.length > 0 && (
-                      <StyledEmojiGrid>
-                        {renderEmojiGrid(currentCategory.emojis)}
-                      </StyledEmojiGrid>
-                    )}
-                </>
-              )}
-            </div>
-          </>
-        )}
+              {categories.map((category, index) => (
+                <StyledTab
+                  key={category.key}
+                  label={category.icon}
+                  value={index}
+                  title={category.name}
+                  onClick={() => setActiveTab(index)}
+                />
+              ))}
+            </Tabs>
+            <StyledSkinToneSelector className="FIE_skin-tone-selector">
+              <StyledSkinToneButton
+                ref={skinToneButtonRef}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowSkinToneSelector(!showSkinToneSelector);
+                }}
+                title={t('selectSkinTone') || 'Select skin tone'}
+                $selected={selectedSkinTone !== 1}
+              >
+                {['✋', '✋🏻', '✋🏼', '✋🏽', '✋🏾', '✋🏿'][selectedSkinTone - 1]}
+              </StyledSkinToneButton>
+            </StyledSkinToneSelector>
+          </div>
+        </StyledTabsContainer>
+
+        <div
+          className="FIE_emoji-picker-panel"
+          style={{
+            height: '350px',
+            overflowY: 'auto',
+            position: 'relative',
+          }}
+        >
+          {currentCategory && (
+            <>
+              <StyledCategoryTitle>
+                {currentCategory.name}
+              </StyledCategoryTitle>
+              {currentCategory.emojis &&
+                currentCategory.emojis.length > 0 && (
+                  <StyledEmojiGrid>
+                    {renderEmojiGrid(currentCategory.emojis)}
+                  </StyledEmojiGrid>
+                )}
+            </>
+          )}
+        </div>
       </StyledEmojiPickerContainer>
       {renderSkinToneDropdown()}
     </Menu>

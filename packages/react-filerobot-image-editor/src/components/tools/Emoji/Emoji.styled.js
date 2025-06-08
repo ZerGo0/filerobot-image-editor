@@ -93,10 +93,6 @@ export const StyledTabsContainer = styled.div`
     display: none;
   }
   
-  .MuiTabs-root {
-    padding: 12px;
-  }
-  
   .MuiTabs-scrollable {
     overflow-x: auto !important;
   }
