@@ -18,7 +18,7 @@ const BlurAnnotationNode = ({
   height = 100,
   scaleX = 1,
   scaleY = 1,
-  rotation = 0,
+  rotation = 0, // Rotation is disabled for blur regions
   annotationEvents,
   opacity = 1,
   blurRadius = 10,
@@ -34,6 +34,8 @@ const BlurAnnotationNode = ({
 }) => {
   const [blurredPreview, setBlurredPreview] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [cachedBlurredFullImage, setCachedBlurredFullImage] = useState(null);
+  const [cachedBlurParams, setCachedBlurParams] = useState(null);
   const groupRef = useRef();
   const imageRef = useRef();
   const {
@@ -59,7 +61,7 @@ const BlurAnnotationNode = ({
     return () => clearInterval(interval);
   }, []);
 
-  // Create blurred preview for editing mode
+  // Create blurred preview for editing mode with caching optimization
   useEffect(() => {
     if (
       !originalImage ||
@@ -74,108 +76,141 @@ const BlurAnnotationNode = ({
     const actualWidth = width;
     const actualHeight = height;
 
-    // First, create a flipped version of the image if needed
-    const flippedCanvas = document.createElement('canvas');
-    flippedCanvas.width = originalImage.width;
-    flippedCanvas.height = originalImage.height;
-    const flippedCtx = flippedCanvas.getContext('2d');
-
-    // Apply flip transformations
-    flippedCtx.save();
-    if (isFlippedX) {
-      flippedCtx.scale(-1, 1);
-      flippedCtx.translate(-originalImage.width, 0);
-    }
-    if (isFlippedY) {
-      flippedCtx.scale(1, -1);
-      flippedCtx.translate(0, -originalImage.height);
-    }
-
-    // Draw the flipped image
-    flippedCtx.drawImage(originalImage, 0, 0);
-    flippedCtx.restore();
-
-    // Calculate scale ratio between original and shown image
-    const scaleRatioX = originalImage.width / shownImageDimensions.width;
-    const scaleRatioY = originalImage.height / shownImageDimensions.height;
-
-    // Map coordinates from shown dimensions to original image dimensions
-    const sourceX = x * scaleRatioX;
-    const sourceY = y * scaleRatioY;
-    const sourceWidth = actualWidth * scaleRatioX;
-    const sourceHeight = actualHeight * scaleRatioY;
-
-    // Create a canvas to extract the region from the flipped image
-    const canvas = document.createElement('canvas');
-    canvas.width = actualWidth;
-    canvas.height = actualHeight;
-    const ctx = canvas.getContext('2d');
-
-    // Extract region from the flipped canvas
-    ctx.drawImage(
-      flippedCanvas,
-      sourceX, // Source X
-      sourceY, // Source Y
-      sourceWidth, // Source Width
-      sourceHeight, // Source Height
-      0, // Destination X
-      0, // Destination Y
-      actualWidth, // Destination Width
-      actualHeight, // Destination Height
-    );
-
-    // Create an off-screen Konva stage for blur processing
-    const container = document.createElement('div');
-    container.style.position = 'absolute';
-    container.style.visibility = 'hidden';
-    document.body.appendChild(container);
-
-    const stage = new Konva.Stage({
-      container,
-      width: actualWidth,
-      height: actualHeight,
+    // Check if we need to recreate the blurred full image
+    const currentBlurParams = JSON.stringify({
+      blurRadius,
+      isFlippedX,
+      isFlippedY,
+      imgWidth: shownImageDimensions.width,
+      imgHeight: shownImageDimensions.height,
     });
 
-    const layer = new Konva.Layer();
-    stage.add(layer);
+    const createBlurredFullImage = (callback) => {
+      // Step 1: Create a canvas with the full image to blur
+      const fullCanvas = document.createElement('canvas');
+      fullCanvas.width = shownImageDimensions.width;
+      fullCanvas.height = shownImageDimensions.height;
+      const fullCtx = fullCanvas.getContext('2d');
 
-    // Create Konva image from canvas
-    const imageFromCanvas = new window.Image();
-    imageFromCanvas.onload = function () {
-      const konvaImage = new Konva.Image({
-        image: imageFromCanvas,
-        x: 0,
-        y: 0,
-        width: actualWidth,
-        height: actualHeight,
+      // Apply flip transformations to match the current image state
+      fullCtx.save();
+      if (isFlippedX) {
+        fullCtx.scale(-1, 1);
+        fullCtx.translate(-shownImageDimensions.width, 0);
+      }
+      if (isFlippedY) {
+        fullCtx.scale(1, -1);
+        fullCtx.translate(0, -shownImageDimensions.height);
+      }
+
+      // Draw the entire image at shown dimensions
+      fullCtx.drawImage(
+        originalImage,
+        0,
+        0,
+        originalImage.width,
+        originalImage.height,
+        0,
+        0,
+        shownImageDimensions.width,
+        shownImageDimensions.height,
+      );
+      fullCtx.restore();
+
+      // Step 2: Create an off-screen Konva stage to blur the entire image
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.visibility = 'hidden';
+      document.body.appendChild(container);
+
+      const blurStage = new Konva.Stage({
+        container,
+        width: shownImageDimensions.width,
+        height: shownImageDimensions.height,
       });
 
-      // Apply blur filter
-      konvaImage.filters([Konva.Filters.Blur]);
-      konvaImage.blurRadius(blurRadius);
-      konvaImage.cache();
+      const blurLayer = new Konva.Layer();
+      blurStage.add(blurLayer);
 
-      layer.add(konvaImage);
-      layer.draw();
+      // Create Konva image from the full canvas
+      const fullImageElement = new window.Image();
+      fullImageElement.onload = function () {
+        const konvaFullImage = new Konva.Image({
+          image: fullImageElement,
+          x: 0,
+          y: 0,
+          width: shownImageDimensions.width,
+          height: shownImageDimensions.height,
+        });
 
-      // Convert to image for preview
-      const dataUrl = stage.toDataURL();
-      const blurredImg = new window.Image();
-      blurredImg.onload = () => {
-        setBlurredPreview(blurredImg);
-        // Cleanup
-        stage.destroy();
-        document.body.removeChild(container);
+        // Apply blur filter to the entire image
+        konvaFullImage.filters([Konva.Filters.Blur]);
+        konvaFullImage.blurRadius(blurRadius);
+        konvaFullImage.cache();
+
+        blurLayer.add(konvaFullImage);
+        blurLayer.draw();
+
+        // Get the blurred full image as a data URL
+        const blurredFullDataUrl = blurStage.toDataURL();
+        const blurredFullImg = new window.Image();
+
+        blurredFullImg.onload = () => {
+          // Cache the blurred full image
+          setCachedBlurredFullImage(blurredFullImg);
+          setCachedBlurParams(currentBlurParams);
+
+          // Call the callback with the blurred full image
+          callback(blurredFullImg);
+
+          // Cleanup
+          blurStage.destroy();
+          if (container.parentNode) {
+            document.body.removeChild(container);
+          }
+        };
+
+        blurredFullImg.src = blurredFullDataUrl;
       };
-      blurredImg.src = dataUrl;
+      fullImageElement.src = fullCanvas.toDataURL();
     };
-    imageFromCanvas.src = canvas.toDataURL();
 
-    return () => {
-      if (container && container.parentNode) {
-        document.body.removeChild(container);
-      }
+    const extractRegionFromBlurredImage = (blurredFullImg) => {
+      // Extract the blurred region from the fully blurred image
+      const extractCanvas = document.createElement('canvas');
+      extractCanvas.width = actualWidth;
+      extractCanvas.height = actualHeight;
+      const extractCtx = extractCanvas.getContext('2d');
+
+      // Extract the specific region from the blurred full image
+      extractCtx.drawImage(
+        blurredFullImg,
+        x, // Source X
+        y, // Source Y
+        actualWidth, // Source Width
+        actualHeight, // Source Height
+        0, // Destination X
+        0, // Destination Y
+        actualWidth, // Destination Width
+        actualHeight, // Destination Height
+      );
+
+      // Convert the extracted region to an image for preview
+      const extractedDataUrl = extractCanvas.toDataURL();
+      const blurredRegionImg = new window.Image();
+      blurredRegionImg.onload = () => {
+        setBlurredPreview(blurredRegionImg);
+      };
+      blurredRegionImg.src = extractedDataUrl;
     };
+
+    // Use cached blurred image if blur parameters haven't changed
+    if (cachedBlurredFullImage && cachedBlurParams === currentBlurParams) {
+      extractRegionFromBlurredImage(cachedBlurredFullImage);
+    } else {
+      // Create new blurred full image
+      createBlurredFullImage(extractRegionFromBlurredImage);
+    }
   }, [
     originalImage,
     shownImageDimensions,
@@ -187,6 +222,8 @@ const BlurAnnotationNode = ({
     isFlippedX,
     isFlippedY,
     isSaving,
+    cachedBlurredFullImage,
+    cachedBlurParams,
   ]);
 
   // Apply cache and filters when saving
@@ -229,9 +266,16 @@ const BlurAnnotationNode = ({
           height={height}
           scaleX={scaleX}
           scaleY={scaleY}
-          rotation={rotation}
+          rotation={0}
           opacity={opacity}
           draggable={draggable}
+          stroke={stroke}
+          strokeWidth={strokeWidth}
+          shadowOffsetX={shadowOffsetX}
+          shadowOffsetY={shadowOffsetY}
+          shadowBlur={shadowBlur}
+          shadowColor={shadowColor}
+          shadowOpacity={shadowOpacity}
           {...annotationEvents}
           {...otherProps}
         />
@@ -270,7 +314,8 @@ const BlurAnnotationNode = ({
     );
   }
 
-  // During save, use the complex blur rendering
+  // During save, use the same approach but with higher resolution
+  // We create a blurred version of the entire image and then clip to show only the region
   return (
     <Group
       ref={groupRef}
@@ -304,6 +349,8 @@ const BlurAnnotationNode = ({
           <Image
             ref={imageRef}
             image={originalImage}
+            // Position the image so the blur region aligns correctly
+            // We offset by the region position scaled to original dimensions
             x={-x * scaleRatioX}
             y={-y * scaleRatioY}
             width={originalImage.width}

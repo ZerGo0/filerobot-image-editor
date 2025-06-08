@@ -32,7 +32,8 @@ const useAnnotationEvents = () => {
   const getAnnotationTransformProps = useCallback((e) => {
     const transformProps = {
       id: e.target.id(),
-      rotation: e.target.rotation(),
+      rotation:
+        e.target.name() === TOOLS_IDS.BLUR_ANNOTATION ? 0 : e.target.rotation(),
       x: e.target.x(),
       y: e.target.y(),
     };

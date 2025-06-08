@@ -1,15 +1,15 @@
 /** External Dependencies */
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Transformer } from 'react-konva';
 
 /** Internal Dependencies */
+import { CHANGE_POINTER_ICON, ENABLE_TEXT_CONTENT_EDIT } from 'actions';
+import { useStore } from 'hooks';
 import {
   NODES_TRANSFORMER_ID,
   POINTER_ICONS,
   TOOLS_IDS,
 } from 'utils/constants';
-import { useStore } from 'hooks';
-import { CHANGE_POINTER_ICON, ENABLE_TEXT_CONTENT_EDIT } from 'actions';
 
 const NodesTransformer = () => {
   const {
@@ -29,7 +29,7 @@ const NodesTransformer = () => {
         : [],
     [selectionsIds],
   );
-  
+
   // Check if any selected node is a blur annotation
   const hasBlurAnnotation = useMemo(
     () => selections.some((node) => node?.name() === TOOLS_IDS.BLUR_ANNOTATION),
@@ -94,7 +94,7 @@ const NodesTransformer = () => {
       onDblClick={enableTextContentChangeOnDblClick}
       onDblTap={enableTextContentChangeOnDblClick}
       enabledAnchors={enabledAnchors}
-      flipEnabled={!useCloudimage && !hasBlurAnnotation}
+      flipEnabled={!useCloudimage}
       shouldOverdrawWholeArea
     />
   );
