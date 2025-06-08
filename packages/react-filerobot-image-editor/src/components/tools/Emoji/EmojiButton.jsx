@@ -1,12 +1,11 @@
 /** External Dependencies */
+import React from 'react';
 import PropTypes from 'prop-types';
+import { Emoji as EmojiIcon } from '@scaleflex/icons/emoji';
 
 /** Internal Dependencies */
 import ToolsBarItemButton from 'components/ToolsBar/ToolsBarItemButton';
 import { TOOLS_IDS } from 'utils/constants';
-
-// Define Icon component outside of the render function
-const EmojiIcon = () => <span style={{ fontSize: '20px' }}>😊</span>;
 
 const EmojiButton = ({ selectTool, isSelected, t }) => (
   <ToolsBarItemButton
