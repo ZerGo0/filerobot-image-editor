@@ -30,10 +30,19 @@ Filerobot Image Editor is a JavaScript library for in-browser image editing, bui
 
 ### Release and Publishing
 
+**IMPORTANT**: Always publish both packages together (`@zergo0/react-filerobot-image-editor` and `@zergo0/filerobot-image-editor`) to keep them in sync. The vanilla JS package depends on the React package.
+
 - `yarn release:beta` - Release beta version (builds packages, publishes to npm with beta tag, publishes JS bundle)
 - `yarn release:prod` - Release production version (publishes packages, JS bundle, and GitHub Pages)
 - `yarn publish:packages` - Build and publish packages to npm
 - `yarn publish:js-bundle` - Build and deploy JS bundle to Filerobot
+
+#### Publishing Process
+
+1. Make sure both packages have the same version number in their `package.json` files
+2. Use `yarn lerna version patch/minor/major --yes` to bump versions
+3. Use `yarn lerna publish from-package --yes` to publish both packages
+4. The vanilla JS package (`@zergo0/filerobot-image-editor`) has a peer dependency on the React package, so version alignment is critical
 
 ### Documentation and Demo
 
