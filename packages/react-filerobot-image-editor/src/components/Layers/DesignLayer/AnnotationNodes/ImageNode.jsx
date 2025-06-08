@@ -1,6 +1,6 @@
 /** External Dependencies */
-import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { Image } from 'react-konva';
 
 /** Internal Dependencies */
