@@ -70,6 +70,10 @@ const BlurAnnotationNode = ({
     )
       return;
 
+    // Use width and height directly since we handle scaling through width/height updates
+    const actualWidth = width;
+    const actualHeight = height;
+
     // First, create a flipped version of the image if needed
     const flippedCanvas = document.createElement('canvas');
     flippedCanvas.width = originalImage.width;
@@ -98,13 +102,13 @@ const BlurAnnotationNode = ({
     // Map coordinates from shown dimensions to original image dimensions
     const sourceX = x * scaleRatioX;
     const sourceY = y * scaleRatioY;
-    const sourceWidth = width * scaleRatioX;
-    const sourceHeight = height * scaleRatioY;
+    const sourceWidth = actualWidth * scaleRatioX;
+    const sourceHeight = actualHeight * scaleRatioY;
 
     // Create a canvas to extract the region from the flipped image
     const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = actualWidth;
+    canvas.height = actualHeight;
     const ctx = canvas.getContext('2d');
 
     // Extract region from the flipped canvas
@@ -116,8 +120,8 @@ const BlurAnnotationNode = ({
       sourceHeight, // Source Height
       0, // Destination X
       0, // Destination Y
-      width, // Destination Width
-      height, // Destination Height
+      actualWidth, // Destination Width
+      actualHeight, // Destination Height
     );
 
     // Create an off-screen Konva stage for blur processing
@@ -127,9 +131,9 @@ const BlurAnnotationNode = ({
     document.body.appendChild(container);
 
     const stage = new Konva.Stage({
-      container: container,
-      width: width,
-      height: height,
+      container,
+      width: actualWidth,
+      height: actualHeight,
     });
 
     const layer = new Konva.Layer();
@@ -142,8 +146,8 @@ const BlurAnnotationNode = ({
         image: imageFromCanvas,
         x: 0,
         y: 0,
-        width: width,
-        height: height,
+        width: actualWidth,
+        height: actualHeight,
       });
 
       // Apply blur filter
@@ -253,10 +257,10 @@ const BlurAnnotationNode = ({
         x={x}
         y={y}
         image={placeholderCanvas}
-        width={width}
-        height={height}
-        scaleX={scaleX}
-        scaleY={scaleY}
+        width={width * scaleX}
+        height={height * scaleY}
+        scaleX={1}
+        scaleY={1}
         rotation={rotation}
         opacity={opacity}
         draggable={draggable}

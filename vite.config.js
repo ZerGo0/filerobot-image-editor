@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { uglify } from 'rollup-plugin-uglify';
+import path from 'path';
 
 const pkg = require('./package.json');
 const pkgVersion = require('./lerna.json').version;
@@ -28,6 +29,12 @@ export default defineConfig(({ mode }) => {
     base: './',
     publicDir: false,
     cacheDir: '.vite',
+    resolve: {
+      alias: {
+        'filerobot-image-editor/src': path.resolve(__dirname, './packages/filerobot-image-editor/src'),
+        'react-filerobot-image-editor/src': path.resolve(__dirname, './packages/react-filerobot-image-editor/src')
+      }
+    },
     plugins: [
       nodeResolve({
         extensions: ['.js', '.jsx', '.json'],

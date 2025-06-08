@@ -1,9 +1,9 @@
 /** External Dependencies */
-import { useMemo, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 /** Internal Dependencies */
-import { SET_ANNOTATION, SELECT_ANNOTATION, SELECT_TOOL } from 'actions';
-import { TOOLS_IDS, TABS_IDS, WATERMARK_ANNOTATION_ID } from 'utils/constants';
+import { SELECT_ANNOTATION, SELECT_TOOL, SET_ANNOTATION } from 'actions';
+import { TABS_IDS, TOOLS_IDS, WATERMARK_ANNOTATION_ID } from 'utils/constants';
 import useStore from './useStore';
 
 const useAnnotationEvents = () => {
@@ -37,7 +37,10 @@ const useAnnotationEvents = () => {
       y: e.target.y(),
     };
 
-    if (e.target.name() === TOOLS_IDS.TEXT) {
+    if (
+      e.target.name() === TOOLS_IDS.TEXT ||
+      e.target.name() === TOOLS_IDS.BLUR_ANNOTATION
+    ) {
       transformProps.width = e.target.width() * e.target.scaleX();
       transformProps.height = e.target.height() * e.target.scaleY();
       transformProps.scaleX = 1;
@@ -55,7 +58,10 @@ const useAnnotationEvents = () => {
   }, []);
 
   const updateTextAnnotationOnTransform = useCallback((e) => {
-    if (e.target.name() === TOOLS_IDS.TEXT) {
+    if (
+      e.target.name() === TOOLS_IDS.TEXT ||
+      e.target.name() === TOOLS_IDS.BLUR_ANNOTATION
+    ) {
       e.target.setAttrs(getAnnotationTransformProps(e));
     }
   });
