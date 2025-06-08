@@ -114,7 +114,6 @@ const EmojiOptions = () => {
         anchorEl={pickerAnchorEl}
         onClose={closeEmojiPicker}
         onSelect={selectEmoji}
-        emojis={availableEmojis}
         t={t}
       />
     </>

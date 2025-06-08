@@ -29,6 +29,7 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.17.2",
+    "@emoji-mart/data": "^1.2.1",
     "@scaleflex/icons": "2.10.27",
     "@scaleflex/ui": "2.10.27",
     "konva": "9.3.6",
